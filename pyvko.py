@@ -7,7 +7,7 @@ from shared.throttler import Throttler
 from user import User
 
 
-class Api(ApiBased):
+class Pyvko(ApiBased):
     def __init__(self) -> None:
         session = vk.Session(access_token=config.ACCESS_TOKEN)
 

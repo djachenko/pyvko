@@ -4,6 +4,7 @@ from pathlib import Path
 import requests as requests
 
 from api_based import ApiBased
+from photo import Photo
 
 
 class PhotosUploader(ApiBased):
@@ -47,7 +48,7 @@ class PhotosUploader(ApiBased):
 
         return json_response
 
-    def upload_to_wall(self, group_id: int, path: Path):
+    def upload_to_wall(self, group_id: int, path: Path) -> Photo:
         server_url = self.get_wall_photo_server(group_id)
 
         json_response = self.upload_to_server(server_url, path)
@@ -62,12 +63,15 @@ class PhotosUploader(ApiBased):
             "hash",
         ]})
 
-        request = self.get_request(**params)
+        request = self.get_request(params)
 
         photo_response = self.api.photos.saveWallPhoto(**request)
 
+        photo = Photo(photo_response[0])
 
-    def upload_to_album(self, album_id: int, group_id: int, path: Path):
+        return photo
+
+    def upload_to_album(self, album_id: int, group_id: int, path: Path) -> Photo:
         server_url = self.get_album_photo_server(album_id, group_id)
 
         json_response = self.upload_to_server(server_url, path)
@@ -88,3 +92,6 @@ class PhotosUploader(ApiBased):
 
         photo_response = self.api.photos.save(**request)
 
+        photo = Photo(photo_response[0])
+
+        return photo
