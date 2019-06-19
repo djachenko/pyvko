@@ -34,7 +34,7 @@ class Post:
             request["post_id"] = self.id
 
         if self.text is not None:
-            request["text"] = self.text
+            request["message"] = self.text
 
         if self.attachments is not None:
             request["attachments"] = ",".join([a.to_attach() for a in self.attachments])
