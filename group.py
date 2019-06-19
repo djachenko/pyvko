@@ -30,10 +30,13 @@ class Group(ApiBased):
         return posts
 
     def add_post(self, post: Post) -> int:
-        request = self.get_request({
-            "from_group": 1,
-            "message": post.text
-        })
+        parameters = {
+            "from_group": 1
+        }
+
+        parameters.update(post.to_request())
+
+        request = self.get_request(parameters)
 
         result = self.api.wall.post(**request)
 

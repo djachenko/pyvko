@@ -16,16 +16,12 @@ class Throttler:
 
         sleep_time = self.__interval + self.__last_time - now
 
-        print(sleep_time)
-
         if sleep_time > 0:
             time.sleep(sleep_time)
 
         self.__last_time = now
 
     def __getattr__(self, name: str) -> Any:
-        print(name)
-
         self.__throttle()
 
         return getattr(self.__object, name)
