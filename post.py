@@ -1,23 +1,25 @@
-import json
-from typing import Dict, List
-
-from vk import API
-
-from api_based import ApiBased
-from attachment import Attachment
+from typing import Dict
 
 
-class Post(ApiBased):
-    def __init__(self, api: API, post_object: Dict) -> None:
-        super().__init__(api)
+class Post:
+    def __init__(self, text: str) -> None:
+        self.id = -1
+        self.text = text
 
-        self.__object = post_object
-
-        print(json.dumps(post_object, indent=4))
-
-        self.id: int = post_object["id"]
-        self.timer_id: int = post_object.get("postponed_id")
-        self.attachments: List[Attachment] = []
+        # self.id: int = post_object["id"]
+        # self.timer_id: int = post_object.get("postponed_id")
+        # self.attachments: List[Attachment] = []
+        # self.message = post_object["message"]
 
     def __str__(self) -> str:
-        return f"Post: {self.id}|{self.timer_id}"
+        return f"Post: {self.id}|{self.text}"
+
+    @staticmethod
+    def from_post_object(post_object: Dict) -> 'Post':
+        post = Post(
+            text=post_object["text"],
+        )
+
+        post.id = post_object["id"]
+
+        return post

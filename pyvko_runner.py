@@ -4,15 +4,14 @@ from api import Api
 def main():
     api = Api()
 
-    current_user = api.current_user()
+    test_group = api.get_group("pyvko_test")
 
-    groups = current_user.groups()
+    posts = test_group.posts()
 
-    for group in groups[:10]:
-        print(group)
+    post_ids = [post.id for post in posts]
 
-    for posts in groups[0].posts():
-        print(posts)
+    for post_id in post_ids:
+        test_group.delete_post(post_id)
 
 
 if __name__ == '__main__':

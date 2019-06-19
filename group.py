@@ -19,9 +19,47 @@ class Group(ApiBased):
         return f"Group: {self.name}({self.id})"
 
     def posts(self) -> List[Post]:
-        posts_response = self.api.wall.get(owner_id=-self.id, v=5.92)
-        posts_descriptions = posts_response["items"]
+        request = self.get_request()
 
-        posts = [Post(api=self.api, post_object=description) for description in posts_descriptions]
+        response = self.api.wall.get(**request)
+
+        posts_descriptions = response["items"]
+
+        posts = [Post.from_post_object(description) for description in posts_descriptions]
 
         return posts
+
+    def add_post(self, post: Post) -> int:
+        request = self.get_request({
+            "from_group": 1,
+            "message": post.text
+        })
+
+        result = self.api.wall.post(**request)
+
+        post_id = result["post_id"]
+
+        return post_id
+
+    def delete_post(self, post_id):
+        request = self.get_request({
+            "post_id": post_id
+        })
+
+        self.api.wall.delete(**request)
+
+    def get_request(self, parameters=None) -> dict:
+        if parameters is None:
+            parameters = {}
+
+        assert "owner_id" not in parameters
+
+        parameters.update({
+            "owner_id": -self.id
+        })
+
+        return super().get_request(parameters)
+
+
+
+
