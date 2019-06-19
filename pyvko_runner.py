@@ -1,17 +1,22 @@
-from api import Api
+from pathlib import Path
+
+from pyvko import Pyvko
+from photos_uploader import PhotosUploader
 
 
 def main():
-    api = Api()
+    pyvko = Pyvko()
 
-    test_group = api.get_group("pyvko_test")
+    test_group = pyvko.get_group("pyvko_test")
 
-    posts = test_group.posts()
+    uploader = PhotosUploader(pyvko.api)
 
-    post_ids = [post.id for post in posts]
+    photo = [path for path in Path("test_photos").iterdir()][0]
 
-    for post_id in post_ids:
-        test_group.delete_post(post_id)
+    # uploader.upload_to_wall(test_group.id, photo)
+    uploader.upload_to_album(264162929, test_group.id, photo)
+
+    a = 7
 
 
 if __name__ == '__main__':
