@@ -1,8 +1,8 @@
 import vk
 
-import config
+from config import config
 from api_based import ApiBased
-from group import Group
+from group.group import Group
 from shared.throttler import Throttler
 from user import User
 

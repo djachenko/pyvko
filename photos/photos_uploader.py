@@ -4,7 +4,7 @@ from pathlib import Path
 import requests as requests
 
 from api_based import ApiBased
-from photo import Photo
+from photos.photo import Photo
 
 
 class PhotosUploader(ApiBased):

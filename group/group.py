@@ -18,8 +18,8 @@ class Group(ApiBased):
     def __str__(self) -> str:
         return f"Group: {self.name}({self.id})"
 
-    def posts(self) -> List[Post]:
-        request = self.get_request()
+    def __get_posts(self, parameters: dict) -> List[Post]:
+        request = self.get_request(parameters)
 
         response = self.api.wall.get(**request)
 
@@ -29,7 +29,13 @@ class Group(ApiBased):
 
         return posts
 
-    def add_post(self, post: Post) -> int:
+    def get_posts(self) -> List[Post]:
+        return self.__get_posts({})
+
+    def get_scheduled_posts(self) -> List[Post]:
+        return self.__get_posts({"filter": "postponed"})
+
+    def __get_post_request(self, post: Post):
         parameters = {
             "from_group": 1
         }
@@ -38,11 +44,21 @@ class Group(ApiBased):
 
         request = self.get_request(parameters)
 
+        return request
+
+    def add_post(self, post: Post) -> int:
+        request = self.__get_post_request(post)
+
         result = self.api.wall.post(**request)
 
         post_id = result["post_id"]
 
         return post_id
+
+    def update_post(self, post: Post):
+        request = self.__get_post_request(post)
+
+        self.api.wall.edit(**request)
 
     def delete_post(self, post_id):
         request = self.get_request({
@@ -62,7 +78,3 @@ class Group(ApiBased):
         })
 
         return super().get_request(parameters)
-
-
-
-
