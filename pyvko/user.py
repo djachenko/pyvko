@@ -4,7 +4,7 @@ from vk import API
 
 
 from api_based import ApiBased
-from group import Group
+from group.group import Group
 
 
 class User(ApiBased):
