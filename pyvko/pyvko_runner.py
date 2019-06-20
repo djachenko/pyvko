@@ -3,9 +3,9 @@ from datetime import timedelta, datetime, date, time
 from pathlib import Path
 from time import sleep
 
-from post import Post
-from pyvko import Pyvko
-from photos.photos_uploader import PhotosUploader
+from pyvko.post import Post
+from pyvko.pyvko import Pyvko
+from pyvko.pyvko import PhotosUploader
 
 
 def test_uploading(pyvko: Pyvko):

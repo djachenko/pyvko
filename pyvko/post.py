@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List
 
-from attachment import Attachment
+from pyvko.attachment import Attachment
 
 
 class Post:
