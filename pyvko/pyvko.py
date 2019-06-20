@@ -1,10 +1,10 @@
 import vk
 
-from config import config
-from api_based import ApiBased
-from group.group import Group
-from shared.throttler import Throttler
-from user import User
+from pyvko.api_based import ApiBased
+from pyvko.config import config
+from pyvko.group.group import Group
+from pyvko.shared.throttler import Throttler
+from pyvko.user import User
 
 
 class Pyvko(ApiBased):

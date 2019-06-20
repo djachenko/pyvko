@@ -3,8 +3,8 @@ from pathlib import Path
 
 import requests as requests
 
-from api_based import ApiBased
-from photos.photo import Photo
+from pyvko.api_based import ApiBased
+from pyvko.pyvko import Photo
 
 
 class PhotosUploader(ApiBased):

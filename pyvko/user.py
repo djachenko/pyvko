@@ -3,8 +3,8 @@ from typing import List
 from vk import API
 
 
-from api_based import ApiBased
-from group.group import Group
+from pyvko.api_based import ApiBased
+from pyvko.pyvko import Group
 
 
 class User(ApiBased):

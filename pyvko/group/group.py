@@ -2,8 +2,8 @@ from typing import List, Dict
 
 from vk import API
 
-from api_based import ApiBased
-from post import Post
+from pyvko.api_based import ApiBased
+from pyvko.post import Post
 
 
 class Group(ApiBased):

@@ -1,4 +1,4 @@
-from attachment import Attachment
+from pyvko.attachment import Attachment
 
 
 class Photo(Attachment):
