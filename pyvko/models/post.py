@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from pyvko.attachment import Attachment
+from pyvko.attachment.attachment_parser import AttachmentParser
 
 
 class Post:
@@ -18,7 +19,9 @@ class Post:
     @staticmethod
     def from_post_object(post_object: Dict) -> 'Post':
         if "attachments" in post_object:
-            attachments = [Attachment.from_object(o) for o in post_object["attachments"]]
+            parser = AttachmentParser.shared()
+
+            attachments = [parser.parse_object(o) for o in post_object["attachments"]]
         else:
             attachments = None
 

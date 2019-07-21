@@ -1,15 +1,18 @@
+from pathlib import Path
+
 import vk
 
 from pyvko.api_based import ApiBased
-from pyvko.config import config
+from pyvko.config.config import Config
 from pyvko.group.group import Group
+from pyvko.photos.photos_uploader import PhotosUploader
 from pyvko.shared.throttler import Throttler
 from pyvko.user import User
 
 
 class Pyvko(ApiBased):
-    def __init__(self) -> None:
-        session = vk.Session(access_token=config.ACCESS_TOKEN)
+    def __init__(self, path_to_config: Path) -> None:
+        session = vk.Session(access_token=Config(path_to_config).access_token)
 
         api = Throttler(vk.API(session), interval=0.6)
 
@@ -34,3 +37,6 @@ class Pyvko(ApiBased):
         group = Group(api=self.api, group_object=group_response[0])
 
         return group
+
+    def get_photos_uploader(self) -> PhotosUploader:
+        return PhotosUploader(self.api)

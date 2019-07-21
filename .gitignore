@@ -6,3 +6,9 @@ __pycache__/
 venv/
 
 config.json
+
+dist/
+
+pyvko\.egg-info/
+
+test_photos/
