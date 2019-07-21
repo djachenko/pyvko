@@ -14,6 +14,7 @@ class Group(ApiBased):
 
         self.id = group_object["id"]
         self.name = group_object["name"]
+        self.url = group_object["screen_name"]
 
     def __str__(self) -> str:
         return f"Group: {self.name}({self.id})"
