@@ -9,3 +9,6 @@ class Photo(Attachment):
             photo_object["owner_id"],
             Attachment.Type.PHOTO
         )
+
+    def to_attach(self) -> str:
+        return f"photo{self.owner_id}_{self.id}"

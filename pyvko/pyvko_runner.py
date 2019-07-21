@@ -3,15 +3,14 @@ from datetime import timedelta, datetime, date, time
 from pathlib import Path
 from time import sleep
 
-from pyvko.post import Post
-from pyvko.pyvko import Pyvko
-from pyvko.pyvko import PhotosUploader
+from pyvko.models.post import Post
+from pyvko.pyvko_main import Pyvko
 
 
 def test_uploading(pyvko: Pyvko):
     test_group = pyvko.get_group("pyvko_test2")
 
-    uploader = PhotosUploader(pyvko.api)
+    uploader = pyvko.get_photos_uploader()
 
     photo_paths = [path for path in Path("test_photos").iterdir()]
 
@@ -46,11 +45,7 @@ def create_scheduled_posts():
         # test_group.add_post(post)
 
 
-def main():
-    pyvko = Pyvko()
-
-    # test_uploading(pyvko)
-
+def test_creating_posts(pyvko: Pyvko):
     test_group = pyvko.get_group("pyvko_test2")
 
     scheduled = test_group.get_scheduled_posts()
@@ -78,6 +73,13 @@ def main():
 
         sleep(random.randint(10, 20))
 
+
+def main():
+    pyvko = Pyvko(Path("config/config.json"))
+
+    justin = pyvko.get_group("djachenko")
+
+    justin_posts = justin.get_posts()
 
 
     a = 7

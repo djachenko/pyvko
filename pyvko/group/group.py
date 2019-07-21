@@ -3,7 +3,7 @@ from typing import List, Dict
 from vk import API
 
 from pyvko.api_based import ApiBased
-from pyvko.post import Post
+from pyvko.models.post import Post
 
 
 class Group(ApiBased):
@@ -19,13 +19,24 @@ class Group(ApiBased):
         return f"Group: {self.name}({self.id})"
 
     def __get_posts(self, parameters: dict) -> List[Post]:
-        request = self.get_request(parameters)
+        posts = []
 
-        response = self.api.wall.get(**request)
+        while True:
+            parameters["offset"] = len(posts)
 
-        posts_descriptions = response["items"]
+            request = self.get_request(parameters)
 
-        posts = [Post.from_post_object(description) for description in posts_descriptions]
+            response = self.api.wall.get(**request)
+
+            posts_descriptions = response["items"]
+            posts_count = response["count"]
+
+            posts_chunk = [Post.from_post_object(description) for description in posts_descriptions]
+
+            posts += posts_chunk
+
+            if posts_count == len(posts):
+                break
 
         return posts
 
@@ -70,6 +81,8 @@ class Group(ApiBased):
     def get_request(self, parameters=None) -> dict:
         if parameters is None:
             parameters = {}
+        else:
+            parameters = parameters.copy()
 
         assert "owner_id" not in parameters
 

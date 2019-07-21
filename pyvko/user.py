@@ -4,7 +4,7 @@ from vk import API
 
 
 from pyvko.api_based import ApiBased
-from pyvko.pyvko import Group
+from pyvko.pyvko_main import Group
 
 
 class User(ApiBased):

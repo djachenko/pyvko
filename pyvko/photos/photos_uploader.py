@@ -4,7 +4,7 @@ from pathlib import Path
 import requests as requests
 
 from pyvko.api_based import ApiBased
-from pyvko.pyvko import Photo
+from pyvko.models.photo import Photo
 
 
 class PhotosUploader(ApiBased):
