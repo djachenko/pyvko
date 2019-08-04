@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, List
 
-from pyvko.attachment import Attachment
+from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.attachment_parser import AttachmentParser
 
 

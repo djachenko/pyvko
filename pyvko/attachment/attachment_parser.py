@@ -1,7 +1,7 @@
 from functools import lru_cache
 
-from pyvko.attachment import Attachment
-from pyvko.models.photo import Photo
+from pyvko.attachment.attachment import Attachment
+from pyvko.attachment.photo import Photo
 
 
 class AttachmentParser:
