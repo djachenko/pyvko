@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import vk
 
 from pyvko.api_based import ApiBased
@@ -11,8 +9,8 @@ from pyvko.user import User
 
 
 class Pyvko(ApiBased):
-    def __init__(self, path_to_config: Path) -> None:
-        session = vk.Session(access_token=Config(path_to_config).access_token)
+    def __init__(self, config: Config) -> None:
+        session = vk.Session(access_token=config.access_token)
 
         api = Throttler(vk.API(session), interval=0.6)
 
