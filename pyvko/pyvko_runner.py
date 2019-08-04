@@ -10,11 +10,9 @@ from pyvko.pyvko_main import Pyvko
 def test_uploading(pyvko: Pyvko):
     test_group = pyvko.get_group("pyvko_test2")
 
-    uploader = pyvko.get_photos_uploader()
+    photo_paths = [path for path in Path("../test_photos").iterdir()]
 
-    photo_paths = [path for path in Path("test_photos").iterdir()]
-
-    photos = [uploader.upload_to_wall(test_group.id, path) for path in photo_paths]
+    photos = [test_group.upload_photo_to_wall(path) for path in photo_paths]
 
     post = Post(text="post w 2 img", attachments=photos)
 
@@ -77,10 +75,7 @@ def test_creating_posts(pyvko: Pyvko):
 def main():
     pyvko = Pyvko(Path("config/config.json"))
 
-    justin = pyvko.get_group("djachenko")
-
-    justin_posts = justin.get_posts()
-
+    test_uploading(pyvko)
 
     a = 7
 

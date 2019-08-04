@@ -4,7 +4,7 @@ import vk
 
 from pyvko.api_based import ApiBased
 from pyvko.config.config import Config
-from pyvko.group.group import Group
+from pyvko.models.group import Group
 from pyvko.photos.photos_uploader import PhotosUploader
 from pyvko.shared.throttler import Throttler
 from pyvko.user import User
