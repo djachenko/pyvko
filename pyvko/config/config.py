@@ -3,13 +3,17 @@ from pathlib import Path
 
 
 class Config:
-    def __init__(self, path_to_config_file: Path) -> None:
+    def __init__(self, json_object: dict) -> None:
         super().__init__()
 
-        with path_to_config_file.open() as config:
-            data = json.load(config)
+        self.__access_token = json_object["token"]
 
-            self.__access_token = data["token"]
+    @classmethod
+    def read(cls, path: Path) -> 'Config':
+        with path.open() as config:
+            json_object = json.load(config)
+
+            return Config(json_object)
 
     @property
     def access_token(self) -> str:

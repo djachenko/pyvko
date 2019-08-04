@@ -3,6 +3,7 @@ from datetime import timedelta, datetime, date, time
 from pathlib import Path
 from time import sleep
 
+from pyvko.config.config import Config
 from pyvko.models.post import Post
 from pyvko.pyvko_main import Pyvko
 
@@ -73,7 +74,7 @@ def test_creating_posts(pyvko: Pyvko):
 
 
 def main():
-    pyvko = Pyvko(Path("config/config.json"))
+    pyvko = Pyvko(Config.read(Path("config/config.json")))
 
     test_uploading(pyvko)
 
