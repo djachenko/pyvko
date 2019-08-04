@@ -1,9 +1,13 @@
+from functools import lru_cache
+from pathlib import Path
 from typing import List, Dict
 
 from vk import API
 
 from pyvko.api_based import ApiBased
+from pyvko.attachment.photo import Photo
 from pyvko.models.post import Post
+from pyvko.photos.photos_uploader import PhotosUploader
 
 
 class Group(ApiBased):
@@ -78,6 +82,15 @@ class Group(ApiBased):
         })
 
         self.api.wall.delete(**request)
+
+    @lru_cache()
+    def __get_wall_uploader(self):
+        return PhotosUploader(self.api)
+
+    def upload_photo_to_wall(self, path: Path) -> Photo:
+        uploader = self.__get_wall_uploader()
+
+        return uploader.upload_to_wall(self.id, path)
 
     def get_request(self, parameters=None) -> dict:
         if parameters is None:
