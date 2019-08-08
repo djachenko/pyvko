@@ -35,6 +35,3 @@ class Pyvko(ApiBased):
         group = Group(api=self.api, group_object=group_response[0])
 
         return group
-
-    def get_photos_uploader(self) -> PhotosUploader:
-        return PhotosUploader(self.api)
