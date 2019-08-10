@@ -3,14 +3,14 @@ import vk
 from pyvko.api_based import ApiBased
 from pyvko.config.config import Config
 from pyvko.models.group import Group
-from pyvko.photos.photos_uploader import PhotosUploader
+from pyvko.shared.captched_session import CaptchedSession
 from pyvko.shared.throttler import Throttler
 from pyvko.user import User
 
 
 class Pyvko(ApiBased):
     def __init__(self, config: Config) -> None:
-        session = vk.Session(access_token=config.access_token)
+        session = CaptchedSession(access_token=config.access_token)
 
         api = Throttler(vk.API(session), interval=0.6)
 
