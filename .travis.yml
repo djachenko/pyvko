@@ -1,0 +1,6 @@
+deploy:
+  provider: pypi
+  user: "djachenko"
+  password:
+    secure: "Your encrypted password"
+  skip_existing: true
