@@ -1,3 +1,5 @@
+from typing import Dict
+
 from vk import API
 
 
@@ -18,7 +20,10 @@ class ApiBased:
             "v": ApiBased.__VERSION
         }
 
-    def get_request(self, parameters: dict) -> dict:
+    def get_request(self, parameters: Dict = None) -> dict:
+        if parameters is None:
+            parameters = {}
+
         assert "v" not in parameters
 
         request = self.get_default_object()
