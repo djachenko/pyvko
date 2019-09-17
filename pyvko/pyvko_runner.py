@@ -76,10 +76,6 @@ def test_creating_posts(pyvko: Pyvko):
 def main():
     pyvko = Pyvko(Config.read(Path("config/config.json")))
 
-    test_uploading(pyvko)
-
-    a = 7
-
 
 if __name__ == '__main__':
     main()
