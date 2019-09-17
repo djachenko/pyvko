@@ -7,6 +7,7 @@ from vk import API
 from pyvko.api_based import ApiBased
 from pyvko.attachment.photo import Photo
 from pyvko.models.post import Post
+from pyvko.photos.album import Album
 from pyvko.photos.photos_uploader import PhotosUploader
 
 
@@ -83,6 +84,27 @@ class Group(ApiBased):
 
         self.api.wall.delete(**request)
 
+    def __get_albums(self, parameters: Dict = None) -> List[Album]:
+        request = self.get_request(parameters)
+
+        result = self.api.photos.getAlbums(**request)
+
+        albums = [Album(self.api, album_object) for album_object in result["items"]]
+
+        return albums
+
+    def get_all_albums(self) -> List[Album]:
+        return self.__get_albums()
+
+    def get_album_by_id(self, album_id: int) -> Album:
+        albums_list = self.__get_albums({
+            "album_ids": [album_id]
+        })
+
+        assert len(albums_list) == 1
+
+        return albums_list[0]
+
     @lru_cache()
     def __get_wall_uploader(self):
         return PhotosUploader(self.api)
@@ -92,7 +114,7 @@ class Group(ApiBased):
 
         return uploader.upload_to_wall(self.id, path)
 
-    def get_request(self, parameters=None) -> dict:
+    def get_request(self, parameters: Dict = None) -> dict:
         if parameters is None:
             parameters = {}
         else:
