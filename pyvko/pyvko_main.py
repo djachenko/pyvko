@@ -7,7 +7,7 @@ from pyvko.config.config import Config
 from pyvko.models.group import Group
 from pyvko.shared.captched_session import CaptchedSession
 from pyvko.shared.throttler import Throttler
-from pyvko.user import User
+from pyvko.models.user import User
 
 
 class Pyvko(ApiBased):

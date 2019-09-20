@@ -15,7 +15,8 @@ class ApiBased:
     def api(self) -> API:
         return self.__api
 
-    def get_default_object(self):
+    @staticmethod
+    def __get_default_object():
         return {
             "v": ApiBased.__VERSION
         }
@@ -26,7 +27,7 @@ class ApiBased:
 
         assert "v" not in parameters
 
-        request = self.get_default_object()
+        request = ApiBased.__get_default_object()
 
         request.update(parameters)
 
