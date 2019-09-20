@@ -1,6 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Callable, Union
 
 from vk import API
 
@@ -26,24 +26,9 @@ class Group(ApiBased):
         return f"Group: {self.name}({self.id})"
 
     def __get_posts(self, parameters: dict) -> List[Post]:
-        posts = []
+        posts_descriptions = self.__get_all(parameters, self.__get_owned_request, self.api.wall.get)
 
-        while True:
-            parameters["offset"] = len(posts)
-
-            request = self.__get_owned_request(parameters)
-
-            response = self.api.wall.get(**request)
-
-            posts_descriptions = response["items"]
-            posts_count = response["count"]
-
-            posts_chunk = [Post.from_post_object(description) for description in posts_descriptions]
-
-            posts += posts_chunk
-
-            if posts_count == len(posts):
-                break
+        posts = [Post.from_post_object(description) for description in posts_descriptions]
 
         return posts
 
@@ -115,18 +100,40 @@ class Group(ApiBased):
 
         return uploader.upload_to_wall(self.id, path)
 
+    def __get_all(self, parameters: Dict, get_request: Callable[[Dict], Dict],
+                  get_response: Callable[[], Dict[str, Union[int, List[Dict]]]]) -> List[Dict]:
+        all_descriptions = []
+
+        while True:
+            parameters["offset"] = len(all_descriptions)
+
+            request = get_request(parameters)
+
+            # noinspection PyArgumentList
+            response = get_response(**request)
+
+            descriptions_chunk = response["items"]
+            count = response["count"]
+
+            all_descriptions += descriptions_chunk
+
+            if count == len(all_descriptions):
+                break
+
+        return all_descriptions
+
     def get_members(self) -> List[User]:
-        request = self.get_request({
+        parameters = {
             "group_id": self.id,
             "sort": "time_desc",
             "fields": [
                 "online",
             ]
-        })
+        }
 
-        response = self.api.groups.getMembers(**request)
+        users_descriptions = self.__get_all(parameters, self.get_request, self.api.groups.getMembers)
 
-        users = [User(api=self.api, user_object=item) for item in response["items"]]
+        users = [User(api=self.api, user_object=description) for description in users_descriptions]
 
         return users
 

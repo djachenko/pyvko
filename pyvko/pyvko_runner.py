@@ -73,8 +73,19 @@ def test_creating_posts(pyvko: Pyvko):
         sleep(random.randint(10, 20))
 
 
+def get_all_members(pyvko: Pyvko):
+    group = pyvko.get("test")
+
+    members = group.get_members()
+    posts = group.get_posts()
+
+    a = 7
+
+
 def main():
     pyvko = Pyvko(Config.read(Path("config/config.json")))
+
+    get_all_members(pyvko)
 
 
 if __name__ == '__main__':
