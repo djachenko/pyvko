@@ -22,6 +22,9 @@ class Throttler:
         self.__last_time = now
 
     def __getattr__(self, name: str) -> Any:
+        return Throttler(getattr(self.__object, name), self.__interval)
+
+    def __call__(self, *args, **kwargs):
         self.__throttle()
 
-        return getattr(self.__object, name)
+        return self.__object(*args, **kwargs)
