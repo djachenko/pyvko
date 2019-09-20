@@ -7,7 +7,9 @@ from vk import API
 from pyvko.api_based import ApiBased
 from pyvko.attachment.photo import Photo
 from pyvko.models.post import Post
+from pyvko.photos.album import Album
 from pyvko.photos.photos_uploader import PhotosUploader
+from pyvko.models.user import User
 
 
 class Group(ApiBased):
@@ -29,7 +31,7 @@ class Group(ApiBased):
         while True:
             parameters["offset"] = len(posts)
 
-            request = self.get_request(parameters)
+            request = self.__get_owned_request(parameters)
 
             response = self.api.wall.get(**request)
 
@@ -58,7 +60,7 @@ class Group(ApiBased):
 
         parameters.update(post.to_request())
 
-        request = self.get_request(parameters)
+        request = self.__get_owned_request(parameters)
 
         return request
 
@@ -77,11 +79,32 @@ class Group(ApiBased):
         self.api.wall.edit(**request)
 
     def delete_post(self, post_id):
-        request = self.get_request({
+        request = self.__get_owned_request({
             "post_id": post_id
         })
 
         self.api.wall.delete(**request)
+
+    def __get_albums(self, parameters: Dict = None) -> List[Album]:
+        request = self.__get_owned_request(parameters)
+
+        result = self.api.photos.getAlbums(**request)
+
+        albums = [Album(self.api, album_object) for album_object in result["items"]]
+
+        return albums
+
+    def get_all_albums(self) -> List[Album]:
+        return self.__get_albums()
+
+    def get_album_by_id(self, album_id: int) -> Album:
+        albums_list = self.__get_albums({
+            "album_ids": [album_id]
+        })
+
+        assert len(albums_list) == 1
+
+        return albums_list[0]
 
     @lru_cache()
     def __get_wall_uploader(self):
@@ -92,7 +115,22 @@ class Group(ApiBased):
 
         return uploader.upload_to_wall(self.id, path)
 
-    def get_request(self, parameters=None) -> dict:
+    def get_members(self) -> List[User]:
+        request = self.get_request({
+            "group_id": self.id,
+            "sort": "time_desc",
+            "fields": [
+                "online",
+            ]
+        })
+
+        response = self.api.groups.getMembers(**request)
+
+        users = [User(api=self.api, user_object=item) for item in response["items"]]
+
+        return users
+
+    def __get_owned_request(self, parameters: Dict = None) -> dict:
         if parameters is None:
             parameters = {}
         else:
@@ -104,4 +142,4 @@ class Group(ApiBased):
             "owner_id": -self.id
         })
 
-        return super().get_request(parameters)
+        return self.get_request(parameters)
