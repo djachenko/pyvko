@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from pyvko.attachment.attachment import Attachment
 
@@ -20,10 +21,14 @@ class Photo(Attachment):
         )
 
         size_mapping = {size["type"]: size["url"] for size in photo_object["sizes"]}
-        self.__size_links = {code: size_mapping[code] for code in Photo.Size}
+        self.__size_links = {code: size_mapping[code] for code in Photo.Size if code in size_mapping}
 
     def to_attach(self) -> str:
         return f"photo{self.owner_id}_{self.id}"
 
-    def largest_link(self) -> str:
-        return self.__size_links[Photo.Size.WIDTH_2560]
+    def largest_link(self) -> Optional[str]:
+        for code in reversed([i for i in Photo.Size]):
+            if code in self.__size_links:
+                return self.__size_links[Photo.Size.WIDTH_2560]
+
+        return None
