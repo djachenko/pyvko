@@ -1,13 +1,15 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Callable, Union
 
 from vk import API
 
 from pyvko.api_based import ApiBased
 from pyvko.attachment.photo import Photo
 from pyvko.models.post import Post
+from pyvko.photos.album import Album
 from pyvko.photos.photos_uploader import PhotosUploader
+from pyvko.models.user import User
 
 
 class Group(ApiBased):
@@ -24,24 +26,9 @@ class Group(ApiBased):
         return f"Group: {self.name}({self.id})"
 
     def __get_posts(self, parameters: dict) -> List[Post]:
-        posts = []
+        posts_descriptions = self.__get_all(parameters, self.__get_owned_request, self.api.wall.get)
 
-        while True:
-            parameters["offset"] = len(posts)
-
-            request = self.get_request(parameters)
-
-            response = self.api.wall.get(**request)
-
-            posts_descriptions = response["items"]
-            posts_count = response["count"]
-
-            posts_chunk = [Post.from_post_object(description) for description in posts_descriptions]
-
-            posts += posts_chunk
-
-            if posts_count == len(posts):
-                break
+        posts = [Post.from_post_object(description) for description in posts_descriptions]
 
         return posts
 
@@ -58,7 +45,7 @@ class Group(ApiBased):
 
         parameters.update(post.to_request())
 
-        request = self.get_request(parameters)
+        request = self.__get_owned_request(parameters)
 
         return request
 
@@ -77,11 +64,32 @@ class Group(ApiBased):
         self.api.wall.edit(**request)
 
     def delete_post(self, post_id):
-        request = self.get_request({
+        request = self.__get_owned_request({
             "post_id": post_id
         })
 
         self.api.wall.delete(**request)
+
+    def __get_albums(self, parameters: Dict = None) -> List[Album]:
+        request = self.__get_owned_request(parameters)
+
+        result = self.api.photos.getAlbums(**request)
+
+        albums = [Album(self.api, album_object) for album_object in result["items"]]
+
+        return albums
+
+    def get_all_albums(self) -> List[Album]:
+        return self.__get_albums()
+
+    def get_album_by_id(self, album_id: int) -> Album:
+        albums_list = self.__get_albums({
+            "album_ids": [album_id]
+        })
+
+        assert len(albums_list) == 1
+
+        return albums_list[0]
 
     @lru_cache()
     def __get_wall_uploader(self):
@@ -92,7 +100,44 @@ class Group(ApiBased):
 
         return uploader.upload_to_wall(self.id, path)
 
-    def get_request(self, parameters=None) -> dict:
+    def __get_all(self, parameters: Dict, get_request: Callable[[Dict], Dict],
+                  get_response: Callable[[], Dict[str, Union[int, List[Dict]]]]) -> List[Dict]:
+        all_descriptions = []
+
+        while True:
+            parameters["offset"] = len(all_descriptions)
+
+            request = get_request(parameters)
+
+            # noinspection PyArgumentList
+            response = get_response(**request)
+
+            descriptions_chunk = response["items"]
+            count = response["count"]
+
+            all_descriptions += descriptions_chunk
+
+            if count == len(all_descriptions):
+                break
+
+        return all_descriptions
+
+    def get_members(self) -> List[User]:
+        parameters = {
+            "group_id": self.id,
+            "sort": "time_desc",
+            "fields": [
+                "online",
+            ]
+        }
+
+        users_descriptions = self.__get_all(parameters, self.get_request, self.api.groups.getMembers)
+
+        users = [User(api=self.api, user_object=description) for description in users_descriptions]
+
+        return users
+
+    def __get_owned_request(self, parameters: Dict = None) -> dict:
         if parameters is None:
             parameters = {}
         else:
@@ -104,4 +149,4 @@ class Group(ApiBased):
             "owner_id": -self.id
         })
 
-        return super().get_request(parameters)
+        return self.get_request(parameters)
