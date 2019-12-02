@@ -13,11 +13,11 @@ deploy:
     skip_existing: true
     on:
       branch: master
-      
+
   - provider: pypi
-    user: djachenko
+    user: "__token__"
     password:
-      secure: A+csaXSZxLPg/ueap5HNM0wWSS6aaT2is+0bCB3ea/7qn34E8wSgdxddYHFk8Ey6KLHmzowT6QFT57o+eNyrISAtCAYYHVcrhrwhn4T8TWBkKsLJMk7hm28Nytuoaa7H/T6MW0sPxA9HdrUVZnHiRCslaWb79FPQPpc9IFpl1niTCFPladdy/vrunGPYlrrgqSokH2cOvXmmVDTW9Ywh6nd7ISI1g03i5CXMpnJCRVeGfmyiVUFb/mC9pRhSw34gNl14nhTJQyXA9twH+911P8H9r0Ls+LHmE/trpL0TC87S6O2HqHy3XKIKNw4JnTF+7F4g+eNxqErW9soLhR6n3DNEKjO1tZsXCh479CHfVHHqwQJEHrdGdfZRic6cMvKnHouuC5sQpqB3pvA2d/wjQrNYSs8lpdHmzC0PqtVZ7bKmBGJqecTVXLajnyooMWB/5A+9N1hKXZRBaNTQMOGOvZ9rCkXufTIrNy1CP9i2Hf/T+EAF6Xd7HEpfSuYM99rLC7hGRQtqCTo9PrtIGKxzmRH9Ggs1BP54cCn770eQyZZmoaLJlAnvL1LfiAGmHZl8WbS5izJOFoF3H9PFZyoMiGcDgLz6R1cVVwUy7V6lTDRoQYHKdRZgRbZLtTc7joMF2HvP4DCCRp/LH32cglGRc+pfL6L000aM3jGWoPNDW9s=
+      secure: "dtzaEdK892oIc/wnfqgb4OklDSTNPShrz34mSTkQ2T+gSvZru4vRVz81R2CAsZ+9s61i2qI/2JGEXfqeU2Ct5yy8syS9U403I59gJ7M0CCTie8s76DUmcVg1wDmNGP+q/wrBbbx66t5RIWBMcRklB1t/RDPfbavd4bBe2H4x9rmRIZYoKmQT+XcEqwY8L3pzWDi7fNV+4+qZpJC4YCQtfQnkGLz8ot1jLHPWqObbCERdgdlSCW/Qd5zfj9DxQyQ7O99jeZrNzfT33lB3rDgJIaqgfihVIsyy+HzCmQ1uqvFbh/s5ftrUOWp0u1Z7RPDZ71y2tFIvKAQ7muK1/tEhugd1TOLXalFSwT+eJDLexs/b1NLG7eA7TJlnWXHBWKnfAJk8SoEeDcacpwuACS2WNnHeviSTZosVeqecBVFEpWPYurnlwWRgHmmMuYicp87n/t29F+JeVOTGJwnHE3+kqFMUoXQftq6596OeqV1+ZKtwBm7Q5phvPwLv5C7qJicPEroQXULcsYt+QkdY8A8rBjvv1b2cIAHdD/n4YWgJ/qFwDznmM+PGiaQBhbOdd90ZW+sstRkwRRGimPMYTDmu/ytTOWr6IBPx3Zz8M3XPUmAf3IXmkwfOBmptOdbCy8QIG0raHEuXtNDgxfbhmLj3UZgi66Y4fbU7wM137AK3m/c="
     skip_existing: true
     on:
       branch: travis-ci_integration
