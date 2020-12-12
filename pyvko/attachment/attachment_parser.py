@@ -1,7 +1,6 @@
 from functools import lru_cache
 from typing import Optional
 
-from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.photo import Photo
 
 
