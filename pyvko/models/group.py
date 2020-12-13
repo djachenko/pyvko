@@ -29,6 +29,10 @@ class Group(ApiBased, Wall, Albums):
 
     # endregion Wall
 
+    @property
+    def url(self) -> str:
+        return self.__url
+
     def get_members(self) -> List['User']:
         parameters = {
             "group_id": self.id,
