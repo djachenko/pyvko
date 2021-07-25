@@ -4,7 +4,7 @@ from vk import API
 
 
 class ApiBased:
-    __VERSION = 5.92
+    __VERSION = 5.131
 
     def __init__(self, api: API) -> None:
         super().__init__()

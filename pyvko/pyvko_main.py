@@ -1,10 +1,11 @@
+from functools import lru_cache
 from typing import Union
 
 import vk
 
 from pyvko.api_based import ApiBased
 from pyvko.config.config import Config
-from pyvko.models.group import Group, User
+from pyvko.models.group import Group, User, Events
 from pyvko.shared.captched_session import CaptchedSession
 from pyvko.shared.throttler import Throttler
 
@@ -67,3 +68,7 @@ class Pyvko(ApiBased):
             return self.get_user(url)
 
         return None
+
+    @lru_cache()
+    def groups(self) -> Events:
+        return Events(self.api)

@@ -1,3 +1,4 @@
+import json
 import random
 from datetime import timedelta, datetime, date, time
 from pathlib import Path
@@ -9,9 +10,9 @@ from pyvko.pyvko_main import Pyvko
 
 
 def test_uploading(pyvko: Pyvko):
-    test_group = pyvko.get_group("pyvko_test2")
+    test_group = pyvko.get_group("mothilda")
 
-    photo_paths = [path for path in Path("../test_photos").iterdir()]
+    photo_paths = [path for path in Path("../test_photos").iterdir()][:3]
 
     photos = [test_group.upload_photo_to_wall(path) for path in photo_paths]
 
@@ -73,6 +74,43 @@ def test_creating_posts(pyvko: Pyvko):
         sleep(random.randint(10, 20))
 
 
+def test_posting_album(pyvko: Pyvko):
+    group = pyvko.get("mothilda")
+
+    photoset_path = Path("C:/Users/justin/photos/stages/stage2.develop/20.12.05.miss_stc/progress/")
+
+    post_config_path = photoset_path / "post_config.json"
+
+    with post_config_path.open() as post_config_file:
+        post_config = json.load(post_config_file)
+
+    cover_name = post_config["cover"]
+
+    photos_folder = photoset_path / "justin"
+    photo_paths = list(photos_folder.iterdir())[:10]
+
+    photos = [group.upload_photo_to_wall(path) for path in photo_paths]
+
+    # new_album = group.create_album(photoset_path.name)
+    #
+    # for photo_path in list(photos_folder.iterdir())[:10]:
+    # photo = new_album.add_photo(photo_path)
+    #
+    #     print(f"uploaded {photo_path.stem}")
+    #
+    #     if photo_path.stem == cover_name:
+    #         new_album.set_cover(photo)
+    #
+    #         print("set as cover")
+
+    post = Post(
+        text="Ololo2",
+        attachments=photos
+    )
+
+    group.add_post(post)
+
+
 def get_all_members(pyvko: Pyvko):
     group = pyvko.get("test")
 
@@ -85,7 +123,9 @@ def get_all_members(pyvko: Pyvko):
 def main():
     pyvko = Pyvko(Config.read(Path("config/config.json")))
 
-    get_all_members(pyvko)
+    groups = pyvko.groups()
+
+    groups.create_event()
 
 
 if __name__ == '__main__':
