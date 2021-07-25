@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Dict, Optional
+from functools import lru_cache
+from typing import List, Dict, Optional, Tuple
 
 from vk import API
 
@@ -68,17 +69,29 @@ class Event(ApiBased, Wall, Albums):
         ARTICLES = "articles"
         NARRATIVES = "narratives"
 
+        @staticmethod
+        @lru_cache()
+        def __section_index_mapping() -> List[Tuple['Event.Section', int]]:
+            return [
+                (Event.Section.PHOTOS, 1),
+                (Event.Section.VIDEOS, 4),
+            ]
+
         @classmethod
         def from_index(cls, index: int) -> Optional['Event.Section']:
-            mapping = {
-                1: Event.Section.PHOTOS,
-                4: Event.Section.VIDEOS
-            }
 
-            if index in mapping:
-                return mapping[index]
-            else:
-                return None
+            for section, section_index in Event.Section.__section_index_mapping():
+                if index == section_index:
+                    return section
+
+            return None
+
+        def to_index(self) -> Optional[int]:
+            for section, section_index in Event.Section.__section_index_mapping():
+                if section == self:
+                    return section_index
+
+            return None
 
     class SectionState(Enum):
         NOT_AVAILABLE = -1
@@ -92,32 +105,68 @@ class Event(ApiBased, Wall, Albums):
         super().__init__(api)
 
         self.__id: int = event_object["id"]
-        self.__start_date: datetime = datetime.fromtimestamp(event_object["start_date"])
-        self.__end_date: Optional[datetime]
+        self.name = event_object["name"]
+        self.start_date: datetime = datetime.fromtimestamp(event_object["start_date"])
+        self.end_date: Optional[datetime]
 
         if "finish_date" in event_object:
-            self.__end_date = datetime.fromtimestamp(event_object["finish_date"])
+            self.end_date = datetime.fromtimestamp(event_object["finish_date"])
         else:
-            self.__end_date = None
+            self.end_date = None
 
-        self.__event_category: Event.Category = Event.Category(settings_object["public_category"])
-        self.__is_open = bool(settings_object["access"])
+        self.event_category: Event.Category = Event.Category(settings_object["public_category"])
+        # self.__is_open = bool(settings_object["access"])
 
         self.__sections: Dict[Event.Section, Event.SectionState] = {
             s: Event.SectionState(settings_object[s.value]) for s in Event.Section
         }
 
-        self.__main_section = Event.Section.from_index(settings_object["main_section"])
-        self.__secondary_section = Event.Section.from_index(settings_object["secondary_section"])
-        self.__is_closed = bool(event_object["is_closed"])
-        self.__organiser: Optional[int] = settings_object.get("event_object_id")
+        self.main_section = Event.Section.from_index(settings_object["main_section"])
+        self.secondary_section = Event.Section.from_index(settings_object["secondary_section"])
+        self.is_closed = bool(event_object["is_closed"])
+        self.organiser: Optional[int] = settings_object.get("event_object_id")
 
     @property
     def id(self) -> int:
         return self.__id
 
-    def get_link(self):
-        pass
+    def section_state(self, section: Section) -> Optional[SectionState]:
+        return self.__sections.get(section)
+
+    def set_section_state(self, section: Section, new_state: SectionState):
+        assert new_state != Event.SectionState.NOT_AVAILABLE
+        assert self.__sections[section] != Event.SectionState.NOT_AVAILABLE
+
+        self.__sections[section] = new_state
+
+    def save(self):
+        params = {
+            "group_id": self.__id,
+            "access": int(self.is_closed),
+            "event_start_date": self.start_date.timestamp(),
+            "event_finish_date": self.end_date.timestamp(),
+            "public_category": self.event_category.value,
+            "name": self.name,
+        }
+
+        for section, state in self.__sections.items():
+            if state == Event.SectionState.NOT_AVAILABLE:
+                continue
+
+            params[section.value] = state.value
+
+        if self.main_section is not None:
+            params["main_section"] = self.main_section.to_index()
+
+        if self.secondary_section is not None:
+            params["secondary_section"] = self.secondary_section.to_index()
+
+        if self.organiser is not None:
+            params["event_group_id"] = self.organiser
+
+        request = self.get_request(params)
+
+        self.api.groups.edit(**request)
 
 
 class User(ApiBased):
@@ -168,6 +217,8 @@ class Events(ApiBased):
         # self.api.groups.create(**request)
 
         event = self.get_event(response["id"])
+
+        event.save()
 
         a = 7
 
