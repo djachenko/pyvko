@@ -7,7 +7,7 @@ from pyvko.api_based import ApiBased
 from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.photo import Photo
 from pyvko.photos.photos_uploader import AlbumPhotoUploader
-from pyvko.shared.downloader import get_all
+from pyvko.shared.utils import get_all
 
 
 class Album(ApiBased, Attachment):

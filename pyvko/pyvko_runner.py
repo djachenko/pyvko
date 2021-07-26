@@ -5,12 +5,13 @@ from pathlib import Path
 from time import sleep
 
 from pyvko.config.config import Config
-from pyvko.models.post import Post
+from pyvko.models.active_models import Event
+from pyvko.models.models import Post
 from pyvko.pyvko_main import Pyvko
 
 
 def test_uploading(pyvko: Pyvko):
-    test_group = pyvko.get_group("mothilda")
+    test_group = pyvko.groups.get_group("mothilda")
 
     photo_paths = [path for path in Path("../test_photos").iterdir()][:3]
 
@@ -46,7 +47,7 @@ def create_scheduled_posts():
 
 
 def test_creating_posts(pyvko: Pyvko):
-    test_group = pyvko.get_group("pyvko_test2")
+    test_group = pyvko.groups.get_group("pyvko_test2")
 
     scheduled = test_group.get_scheduled_posts()
 
@@ -123,9 +124,28 @@ def get_all_members(pyvko: Pyvko):
 def main():
     pyvko = Pyvko(Config.read(Path("config/config.json")))
 
-    groups = pyvko.groups()
+    groups = pyvko.groups
 
-    groups.create_event()
+    group = groups.get_group("jvstin")
+
+    event = group.create_event("this is test")
+
+    now = datetime.now()
+
+    event.name = f"Renamed event {now}"
+    event.event_category = Event.Category.CIRCUS
+    event.start_date = now + timedelta(hours=2)
+    event.end_date = now + timedelta(hours=2, minutes=30)
+
+    for section in Event.Section:
+        event.set_section_state(section, Event.SectionState.DISABLED)
+
+    event.set_section_state(Event.Section.PHOTOS, Event.SectionState.LIMITED)
+    event.set_section_state(Event.Section.WALL, Event.SectionState.LIMITED)
+    event.is_closed = True
+    event.main_section = Event.Section.PHOTOS
+
+    event.save()
 
 
 if __name__ == '__main__':

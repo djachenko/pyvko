@@ -18,7 +18,7 @@ def get_token() -> str:
         "redirect_uri": "http://oauth.vk.com/blank.html",
         "display": "page",
         "response_type": "token",
-        "v": 5.92
+        "v": 5.131
     }
 
     params = urlencode(params)

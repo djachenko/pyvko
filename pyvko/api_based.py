@@ -1,6 +1,18 @@
+from abc import abstractmethod
 from typing import Dict
 
 from vk import API
+
+
+class ApiMixin:
+    @property
+    @abstractmethod
+    def api(self) -> API:
+        pass
+
+    @abstractmethod
+    def get_request(self, parameters: Dict = None) -> Dict:
+        pass
 
 
 class ApiBased:
@@ -21,7 +33,7 @@ class ApiBased:
             "v": ApiBased.__VERSION
         }
 
-    def get_request(self, parameters: Dict = None) -> dict:
+    def get_request(self, parameters: Dict = None) -> Dict:
         if parameters is None:
             parameters = {}
 
