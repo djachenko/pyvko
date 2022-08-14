@@ -8,12 +8,26 @@ def get_token() -> str:
     params = {
         "client_id": 5503908,
         "scope": ",".join([
-            "messages",
-            "wall",
-            "groups",
-            "photos",
-            "offline",
-            "docs"
+            # "notify",         # (+1)      	User allowed to send notifications to him/her (for Flash/iFrame apps).
+            # "friends",        # (+2)      	Access to friends.
+            "photos",           # (+4)      	Access to photos.
+            # "audio",          # (+8)      	Access to audio.
+            # "video",          # (+16)     	Access to video.
+            # "stories",        # (+64)     	Access to stories.
+            # "pages",          # (+128)        Access to wiki pages.
+            # "no value"        # (+256)        Addition of link to the application in the left menu.
+            # "status",         # (+1024)       Access to user status.
+            # "notes",          # (+2048)       Access to notes.
+            "messages",         # (+4096)       (for Standalone applications) Access to advanced methods for messaging.
+            "wall",             # (+8192)       Access to standard and advanced methods for the wall. Note that this access permission is unavailable for sites (it is ignored at attempt of authorization).
+            # "ads",            # (+32768)      Access to advanced methods for Ads API.
+            "offline",          # (+65536)      Access to API at any time (you will receive expires_in = 0 in this case).
+            "docs",             # (+131072)     Access to docs.
+            "groups",           # (+262144)     Access to user communities.
+            # "notifications",  # (+524288)     Access to notifications about answers to the user.
+            # "stats",          # (+1048576)    Access to statistics of user groups and applications where he/she is an administrator.
+            # "email",          # (+4194304)    Access to user email.
+            # "market",         # (+134217728)  Access to market.
         ]),
         "redirect_uri": "http://oauth.vk.com/blank.html",
         "display": "page",

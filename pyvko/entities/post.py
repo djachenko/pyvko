@@ -1,23 +1,40 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import List, Dict
 
+from vk import API
+
+from pyvko.api_based import ApiBased
 from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.attachment_parser import AttachmentParser
+from pyvko.shared.mixins.comments import Comments
 
 
-class Post:
-    def __init__(self, text: str = None, attachments: List[Attachment] = None, date: datetime = None) -> None:
+class Post(ApiBased, Comments):
+
+    @property
+    def post_id(self) -> int:
+        return self.id
+
+    @property
+    def owner_id(self) -> int:
+        return self.__owner_id
+
+    def __init__(self, api: API, owner_id: int, text: str = None, attachments: List[Attachment] = None,
+                 date: datetime = None) -> None:
+        super().__init__(api)
+
         self.date = date
         self.attachments = attachments
         self.id = None
         self.text = text
         self.timer_id = None
+        self.__owner_id = owner_id
 
     def __str__(self) -> str:
         return f"Post: {self.id} | {self.text}"
 
     @staticmethod
-    def from_post_object(post_object: Dict) -> 'Post':
+    def from_post_object(post_object: Dict, api: API) -> 'Post':
         if "attachments" in post_object:
             parser = AttachmentParser.shared()
 
@@ -26,9 +43,11 @@ class Post:
             attachments = None
 
         post = Post(
+            api=api,
+            owner_id=post_object["owner_id"],
             text=post_object["text"],
             date=datetime.fromtimestamp(post_object["date"]),
-            attachments=attachments
+            attachments=attachments,
         )
 
         post.id = post_object["id"]
