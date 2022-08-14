@@ -1,12 +1,11 @@
 import time
 import webbrowser
-from typing import Generator, Dict, Callable, Union, List, Any
+from typing import Dict, Callable, List, Any, Iterable
 
 from vk import Session
 
 
-def get_all(parameters: Dict, get_response: Callable[[], Dict[str, Union[int, List[Dict]]]]) \
-        -> Generator[Dict, None, None]:
+def get_all(parameters: Dict, get_response: Callable[[], Dict[str, int | List[Dict]]]) -> Iterable[Dict]:
     parameters = parameters.copy()
     total = 0
 

@@ -5,10 +5,10 @@ from pyvko.attachment.photo import Photo
 
 
 class AttachmentParser:
-    @staticmethod
+    @classmethod
     @lru_cache()
-    def shared():
-        return AttachmentParser()
+    def shared(cls):
+        return cls()
 
     def parse_photo(self, api_object: dict) -> Photo:
         return Photo(api_object)
