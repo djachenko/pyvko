@@ -1,40 +1,44 @@
 import json
+from abc import abstractmethod
 from pathlib import Path
+from typing import Callable, Dict, List, Iterable
 
 import requests as requests
+from vk import API
 
 from pyvko.api_based import ApiBased
 from pyvko.attachment.photo import Photo
 
 
-class PhotosUploader(ApiBased):
-    def get_wall_photo_server(self, group_id: int = None) -> str:
-        parameters = {}
+class PhotoUploader(ApiBased):
+    @property
+    @abstractmethod
+    def server_provider(self) -> Callable[[Dict], Dict[str, str]]:
+        pass
 
-        if group_id is not None:
-            parameters["group_id"] = group_id
+    @property
+    @abstractmethod
+    def saver(self) -> Callable[[Dict], List[Dict]]:
+        pass
 
-        request = self.get_request(parameters)
+    @property
+    @abstractmethod
+    def fields(self) -> Iterable[str]:
+        pass
 
-        response = self.api.photos.getWallUploadServer(**request)
+    @abstractmethod
+    def get_params(self) -> Dict[str, int]:
+        pass
 
-        return response["upload_url"]
+    def __upload_to_server(self, path: Path) -> Dict:
+        params = self.get_params()
 
-    def get_album_photo_server(self, album_id: int, group_id: int = None) -> str:
-        parameters = {
-            "album_id": album_id
-        }
+        request = self.get_request(params)
 
-        if group_id is not None:
-            parameters["group_id"] = group_id
+        response = self.server_provider(**request)
 
-        request = self.get_request(parameters)
+        server_url = response["upload_url"]
 
-        response = self.api.photos.getUploadServer(**request)
-
-        return response["upload_url"]
-
-    def upload_to_server(self, server_url: str, path: Path) -> dict:
         data = {
             "photo": path.open("rb")
         }
@@ -48,50 +52,81 @@ class PhotosUploader(ApiBased):
 
         return json_response
 
-    def upload_to_wall(self, group_id: int, path: Path) -> Photo:
-        server_url = self.get_wall_photo_server(group_id)
+    def __save_photo(self, json_response: Dict) -> Photo:
+        params = self.get_params().copy()
 
-        json_response = self.upload_to_server(server_url, path)
-
-        params = {
-            "group_id": group_id
-        }
-
-        params.update({name: json_response[name] for name in [
-            "photo",
-            "server",
-            "hash",
-        ]})
+        params.update({name: json_response[name] for name in self.fields})
 
         request = self.get_request(params)
 
-        photo_response = self.api.photos.saveWallPhoto(**request)
+        photo_response = self.saver(**request)
 
         photo = Photo(photo_response[0])
 
         return photo
 
-    def upload_to_album(self, album_id: int, group_id: int, path: Path) -> Photo:
-        server_url = self.get_album_photo_server(album_id, group_id)
+    def upload(self, path: Path) -> Photo:
+        server_response = self.__upload_to_server(path)
 
-        json_response = self.upload_to_server(server_url, path)
+        photo = self.__save_photo(server_response)
 
-        params = {
-            "album_id": album_id,
-            "group_id": group_id,
+        return photo
+
+
+class WallPhotoUploader(PhotoUploader):
+    def __init__(self, api: API, group_id: int) -> None:
+        super().__init__(api)
+
+        self.__group_id = group_id
+
+    @property
+    def server_provider(self) -> Callable[[Dict], str]:
+        return self.api.photos.getWallUploadServer
+
+    @property
+    def saver(self) -> Callable[[Dict], str]:
+        return self.api.photos.saveWallPhoto
+
+    @property
+    def fields(self) -> Iterable[str]:
+        return [
+            "photo",
+            "server",
+            "hash",
+        ]
+
+    def get_params(self) -> Dict[str, int]:
+        return {
+            "group_id": self.__group_id,
         }
 
-        params.update({name: json_response[name] for name in [
+
+class AlbumPhotoUploader(PhotoUploader):
+    def __init__(self, api: API, album_id: int, group_id: int) -> None:
+        super().__init__(api)
+
+        self.__album_id = album_id
+        self.__group_id = group_id
+
+    @property
+    def server_provider(self) -> Callable[[Dict], str]:
+        return self.api.photos.getUploadServer
+
+    @property
+    def saver(self) -> Callable[[Dict], List[Dict]]:
+        return self.api.photos.save
+
+    @property
+    def fields(self) -> Iterable[str]:
+        return [
             "photos_list",
             "server",
             "aid",
             "hash",
-        ]})
+        ]
 
-        request = self.get_request(params)
-
-        photo_response = self.api.photos.save(**request)
-
-        photo = Photo(photo_response[0])
-
-        return photo
+    def get_params(self) -> Dict[str, int]:
+        return {
+            "album_id": self.__album_id,
+            "group_id": self.__group_id,
+        }
