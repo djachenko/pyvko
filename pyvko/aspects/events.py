@@ -1,16 +1,18 @@
+from abc import ABC
 from datetime import datetime
 from enum import Enum
 from functools import lru_cache
-from typing import Optional, List, Tuple, Dict
+from typing import Optional, List, Dict, Tuple
+from urllib.parse import urlparse
 
 from vk import API
 
-from pyvko.api_based import ApiBased
-from pyvko.shared.mixins.albums import Albums
-from pyvko.shared.mixins.wall import Wall
+from pyvko.api_based import ApiMixin, ApiBased
+from pyvko.aspects.albums import Albums
+from pyvko.aspects.posts import Posts
 
 
-class Event(ApiBased, Wall, Albums):
+class Event(ApiBased, Posts, Albums):
     class Category(Enum):
         CIRCUS = 1120
 
@@ -72,7 +74,7 @@ class Event(ApiBased, Wall, Albums):
             self.end_date = None
 
         category_value = settings_object["public_category"]
-        self.event_category: Optional[Event.Category]
+        self.event_category: Event.Category | None
 
         if category_value != 0:
             self.event_category = Event.Category(category_value)
@@ -86,11 +88,16 @@ class Event(ApiBased, Wall, Albums):
         self.main_section = Event.Section.from_index(settings_object["main_section"])
         self.secondary_section = Event.Section.from_index(settings_object["secondary_section"])
         self.is_closed = bool(event_object["is_closed"])
+        self.url = event_object["screen_name"]
         self.organiser: int | None = settings_object.get("event_object_id")
 
     @property
     def id(self) -> int:
         return self.__id
+
+    @property
+    def browser_url(self):
+        return f"http://vk.com/event{abs(self.id)}"
 
     def section_state(self, section: Section) -> Optional[SectionState]:
         return self.__sections.get(section)
@@ -103,7 +110,7 @@ class Event(ApiBased, Wall, Albums):
 
     def save(self):
         params = {
-            "group_id": self.__id,
+            "group_id": abs(self.__id),
             "access": int(self.is_closed),
             "event_start_date": self.start_date.timestamp(),
             "title": self.name,
@@ -128,8 +135,70 @@ class Event(ApiBased, Wall, Albums):
             params["secondary_section"] = self.secondary_section.to_index()
 
         if self.organiser is not None:
-            params["event_group_id"] = self.organiser
+            params["event_group_id"] = abs(self.organiser)
 
         request = self.get_request(params)
 
         self.api.groups.edit(**request)
+
+
+class Events(ApiMixin, ABC):
+    def create_event(self, title: str) -> Event:
+        request = self.get_request({
+            "title": title,
+            "type": "event",
+        })
+
+        response = self.api.groups.create(**request)
+
+        event = self.get_event(response["id"])
+
+        return event
+
+    def get_event(self, url: str | int) -> Event | None:
+        url = str(url)
+
+        parse_result = urlparse(url)
+
+        qualifier = parse_result.path \
+            .split("/")[-1] \
+            .removeprefix("event") \
+            .removeprefix("-")
+
+        if not qualifier.isdecimal():
+            return None
+
+        group_id = int(qualifier)
+
+        group_request = self.get_request({
+            "group_id": group_id,
+            "fields": [
+                "start_date",
+                "finish_date",
+            ]
+        })
+
+        event_request = {
+            "fields": [
+                "start_date",
+                "finish_date",
+                "main_section",
+            ]
+        }
+
+        event_request.update(group_request)
+
+        event_response = self.api.groups.getById(**event_request)
+
+        event_object = event_response[0]
+
+        if event_object["type"] not in ["event", ]:
+            return None
+
+        group_request["group_id"] = event_object["id"]
+
+        settings_response = self.api.groups.getSettings(**group_request)
+
+        event = Event(self.api, event_object=event_object, settings_object=settings_response)
+
+        return event
