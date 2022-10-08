@@ -4,7 +4,12 @@ from typing import Dict
 from vk import API
 
 
-class ApiMixin:
+class RequestRoot:
+    def get_request(self, parameters: Dict = None):
+        return parameters or {}
+
+
+class ApiMixin(RequestRoot):
     @property
     @abstractmethod
     def api(self) -> API:
@@ -12,10 +17,10 @@ class ApiMixin:
 
     @abstractmethod
     def get_request(self, parameters: Dict = None) -> Dict:
-        pass
+        return super().get_request(parameters)
 
 
-class ApiBased:
+class ApiBased(RequestRoot):
     __VERSION = 5.131
 
     def __init__(self, api: API) -> None:
@@ -39,8 +44,6 @@ class ApiBased:
 
         assert "v" not in parameters
 
-        request = ApiBased.__get_default_object()
-
-        request.update(parameters)
+        request = ApiBased.__get_default_object() | parameters | super().get_request()
 
         return request

@@ -3,17 +3,21 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Dict
 
-from pyvko.api_based import ApiMixin
+from vk import API
+
+from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.attachment_parser import AttachmentParser
+from pyvko.aspects.likes import Likes
 from pyvko.shared.utils import get_all
 
 
 @dataclass
 class CommentModel:
     text: str
-    from_group: bool = False
-    # attachments: List[Attachment] = Ni
+    from_group: int = 0
+
+    attachments: List[Attachment] = None
 
     def to_request(self):
         request = {}
@@ -21,21 +25,51 @@ class CommentModel:
         if self.text:
             request["message"] = self.text
 
-        if self.from_group:
-            request["from_group"] = 1
+        if self.from_group != 0:
+            request["from_group"] = self.from_group
+
+        if self.attachments:
+            request["attachments"] = ",".join([a.to_attach() for a in self.attachments])
 
         return request
 
 
-@dataclass
-class Comment:
-    id: int
-    date: datetime
-    text: str
-    attachments: List[Attachment]
+class Comment(ApiBased, Likes):
+    @property
+    def item_id(self) -> int:
+        return self.id
+
+    @property
+    def type(self) -> str:
+        return "comment"
+
+    @property
+    def owner_id(self) -> int:
+        return self.__owner_id
+
+    @property
+    def id(self):
+        return self.__id
+
+    @property
+    def text(self) -> str:
+        return self.__text
+
+    @property
+    def date(self) -> datetime:
+        return self.__date
+
+    def __init__(self, api: API, comment_id: int, owner_id: int, date: datetime, text: str, attachments: List[Attachment]) -> None:
+        super().__init__(api)
+
+        self.__id = comment_id
+        self.__owner_id = owner_id
+        self.__date = date
+        self.__text = text
+        self.__attachments = attachments
 
     @classmethod
-    def from_api_object(cls, api_object: Dict) -> 'Comment':
+    def from_api_object(cls, api_object: Dict, api: API) -> 'Comment':
         if "attachments" in api_object:
             parser = AttachmentParser.shared()
 
@@ -44,7 +78,9 @@ class Comment:
             attachments = None
 
         return Comment(
-            id=api_object["id"],
+            api=api,
+            comment_id=api_object["id"],
+            owner_id=api_object["owner_id"],
             date=datetime.fromtimestamp(api_object["date"]),
             text=api_object["text"],
             attachments=attachments
@@ -81,9 +117,9 @@ class Comments(ApiMixin, ABC):
             # "count": 10,
         })
 
-        comments_objects = list(get_all(request, self.api.wall.getComments))
+        comments_objects = list(get_all(request, self.api.wall.getComments, count_key="current_level_count"))
 
-        comments = [Comment.from_api_object(comments_object) for comments_object in comments_objects]
+        comments = [Comment.from_api_object(comments_object, self.api) for comments_object in comments_objects]
 
         return comments
 
@@ -96,6 +132,6 @@ class Comments(ApiMixin, ABC):
 
         comment_object = self.api.wall.getComment(**request)
 
-        comment = Comment.from_api_object(comment_object["items"][0])
+        comment = Comment.from_api_object(comment_object["items"][0], self.api)
 
         return comment

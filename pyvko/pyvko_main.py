@@ -1,25 +1,21 @@
-from functools import lru_cache
 from urllib.parse import urlparse
 
 import vk
 
 from pyvko.api_based import ApiBased
 from pyvko.config.config import Config
-from pyvko.entities.event import Event
-from pyvko.entities.group import Group
 from pyvko.entities.user import User
-from pyvko.shared.mixins.events import Events
-from pyvko.shared.mixins.groups import Groups
-from pyvko.shared.mixins.utils import Utils
-from pyvko.shared.pure_mixins import GroupsImplementation, EventsImplementation
+from pyvko.aspects.events import Events, Event
+from pyvko.aspects.groups import Groups, Group
+from pyvko.aspects.utils import Utils
 from pyvko.shared.utils import Throttler, CaptchedSession
 
 
-class Pyvko(ApiBased, Utils):
+class Pyvko(ApiBased, Utils, Events, Groups):
     def __init__(self, config: Config) -> None:
         session = CaptchedSession(access_token=config.access_token)
 
-        api = Throttler(vk.API(session), interval=0.6)
+        api = Throttler(vk.API(session), interval=1)
 
         # noinspection PyTypeChecker
         super().__init__(api)
@@ -55,7 +51,7 @@ class Pyvko(ApiBased, Utils):
         name_type = self.resolve_name(url)
 
         if name_type == "group":
-            return self.groups.get_group(url) or self.events.get_event(url)
+            return self.get_group(url) or self.get_event(url)
         elif name_type == "user":
             return self.get_user(url)
 
@@ -71,10 +67,10 @@ class Pyvko(ApiBased, Utils):
 
         prefixes_mapping = {
             "id": self.get_user,
-            "event": self.events.get_event,
-            "club": self.groups.get_group,
-            "public": self.groups.get_group,
-            "-": lambda x: self.groups.get_group(x) or self.events.get_event(x)
+            "event": self.get_event,
+            "club": self.get_group,
+            "public": self.get_group,
+            "-": lambda x: self.get_group(x) or self.get_event(x)
         }
 
         for prefix, handler in prefixes_mapping.items():
@@ -92,17 +88,3 @@ class Pyvko(ApiBased, Utils):
     # name
     # qualified id
     # signed id
-
-    @property
-    @lru_cache()
-    def events(self) -> Events:
-        return EventsImplementation(self.api)
-
-    @property
-    @lru_cache()
-    def groups(self) -> Groups:
-        return GroupsImplementation(self.api)
-
-    # region utils
-
-    # endregion utils

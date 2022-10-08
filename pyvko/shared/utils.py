@@ -4,8 +4,11 @@ from typing import Dict, Callable, List, Any, Iterable
 
 from vk import Session
 
+Json = Dict[str, 'Json'] | List['Json'] | str | int
 
-def get_all(parameters: Dict, get_response: Callable[[], Dict[str, int | List[Dict]]]) -> Iterable[Dict]:
+
+def get_all(parameters: Dict, get_response: Callable[[Json], Json], count_key: str = "count") -> \
+        Iterable[Dict]:
     parameters = parameters.copy()
     total = 0
 
@@ -19,7 +22,7 @@ def get_all(parameters: Dict, get_response: Callable[[], Dict[str, int | List[Di
         assert "count" in response
 
         descriptions_chunk = response["items"]
-        count = response["count"]
+        count = response[count_key]
 
         total += len(descriptions_chunk)
 
@@ -58,7 +61,7 @@ class Throttler:
         def time(self, value: float):
             self.__time = value
 
-    def __init__(self, obj, interval: float, context: Context = None) -> None:
+    def __init__(self, obj, interval: float, context: Context | None = None) -> None:
         super().__init__()
 
         if context is None:
