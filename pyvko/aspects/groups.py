@@ -25,6 +25,10 @@ class Group(ApiBased, Posts, Albums, Events):
     def __str__(self) -> str:
         return f"Group: {self.__name}({self.id})"
 
+    @property
+    def name(self) -> str:
+        return self.__name
+
     # region Wall
 
     @property
@@ -71,14 +75,14 @@ class Group(ApiBased, Posts, Albums, Events):
 
 
 class Groups(ApiMixin, ABC):
-    def get_group(self, url: str) -> Group | None:
+    def get_group(self, url: str | int) -> Group | None:
         group_request = self.get_request({
             "group_id": url
         })
 
         group_response = self.api.groups.getById(**group_request)
 
-        group_object = group_response[0]
+        group_object = group_response["groups"][0]
 
         if group_object["type"] not in ["page", "group"]:
             return None

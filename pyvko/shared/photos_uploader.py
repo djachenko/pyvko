@@ -61,12 +61,19 @@ class PhotoUploader(ApiBased):
 
         photo_response = self.saver(**request)
 
-        photo = Photo(photo_response[0])
+        photo = Photo.from_photo_object(self.api, photo_response[0])
 
         return photo
 
     def upload(self, path: Path) -> Photo:
-        server_response = self.__upload_to_server(path)
+        while True:
+            server_response = self.__upload_to_server(path)
+
+            if server_response.get("photo") or server_response.get("photos_list"):
+                break
+
+            print()
+            print("No photo, reuploading...", end="")
 
         photo = self.__save_photo(server_response)
 

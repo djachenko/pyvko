@@ -3,16 +3,18 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Dict, Iterable
+from typing import List, Dict
 
 from vk import API
 
 from pyvko.api_based import ApiBased, ApiMixin
+from pyvko.aspects.comments import Comments
+from pyvko.aspects.likes import Likes
+from pyvko.aspects.reposts import Reposts
 from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.attachment_parser import AttachmentParser
 from pyvko.attachment.photo import Photo
 from pyvko.shared.photos_uploader import WallPhotoUploader, PhotoUploader
-from pyvko.aspects.comments import Comments
 from pyvko.shared.utils import get_all
 
 
@@ -32,12 +34,19 @@ class PostModel:
             request["attachments"] = ",".join([a.to_attach() for a in self.attachments])
 
         if self.date is not None:
-            request["publish_date"] = self.date.timestamp()
+            request["publish_date"] = int(self.date.timestamp())
 
         return request
 
 
-class Post(ApiBased, Comments):
+class Post(ApiBased, Comments, Likes, Reposts):
+    @property
+    def like_object_type(self) -> str:
+        return "post"
+
+    @property
+    def item_id(self) -> int:
+        return self.id
 
     @property
     def post_id(self) -> int:
@@ -50,6 +59,9 @@ class Post(ApiBased, Comments):
     def __init__(self, api: API, owner_id: int, text: str = None, attachments: List[Attachment] = None,
                  date: datetime = None) -> None:
         super().__init__(api)
+
+        if attachments is None:
+            attachments = []
 
         self.date = date
         self.attachments = attachments
@@ -66,7 +78,7 @@ class Post(ApiBased, Comments):
         if "attachments" in post_object:
             parser = AttachmentParser.shared()
 
-            attachments = [parser.parse_object(o) for o in post_object["attachments"]]
+            attachments = [parser.parse_object(o, api) for o in post_object["attachments"]]
         else:
             attachments = None
 
@@ -98,7 +110,7 @@ class Post(ApiBased, Comments):
             request["attachments"] = ",".join([a.to_attach() for a in self.attachments])
 
         if self.date is not None:
-            request["publish_date"] = self.date.timestamp()
+            request["publish_date"] = int(self.date.timestamp())
 
         return request
 
@@ -120,10 +132,10 @@ class Posts(ApiMixin, ABC):
 
         return posts
 
-    def get_posts(self, ids: Iterable[int] | None = None) -> List[Post]:
+    def get_posts(self, *ids: int) -> List[Post]:
         # from pyvko.entities.comment import Post
 
-        if ids is None:
+        if not ids:
             return self.__get_posts({
                 "count": 100,
             })
@@ -132,12 +144,13 @@ class Posts(ApiMixin, ABC):
             "posts": [f"{self.id}_{post_id}" for post_id in ids],
         })
 
-        posts = self.api.wall.getById(**request)
+        posts = self.api.wall.getById(**request)["items"]
+        posts = [post for post in posts if not post.get("is_deleted", False)]
 
         return [Post.from_post_object(post, self.api) for post in posts]
 
     def get_post(self, post_id: int) -> Post | None:
-        posts = self.get_posts([post_id])
+        posts = self.get_posts(post_id)
 
         if len(posts) == 0:
             return None

@@ -21,7 +21,7 @@ class ApiMixin(RequestRoot):
 
 
 class ApiBased(RequestRoot):
-    __VERSION = 5.131
+    __VERSION = 5.199
 
     def __init__(self, api: API) -> None:
         super().__init__()

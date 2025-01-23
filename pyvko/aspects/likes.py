@@ -18,7 +18,7 @@ class Like:
 class Likes(ApiMixin, ABC):
     @property
     @abstractmethod
-    def type(self) -> str:
+    def like_object_type(self) -> str:
         pass
 
     @property
@@ -36,6 +36,9 @@ class Likes(ApiMixin, ABC):
 
         return [Like.from_api_object(i) for i in get_all(request, self.api.likes.getList)]
 
+    def has_likes(self) -> bool:
+        return len(self.get_likes()) > 0
+
     def is_liked(self, by: int | None = None) -> bool:
         params = {}
 
@@ -48,9 +51,14 @@ class Likes(ApiMixin, ABC):
 
         return response["liked"] == 1
 
+    def like(self) -> None:
+        request = self.get_request()
+
+        self.api.likes.add(**request)
+
     def get_request(self, parameters: Dict = None) -> Dict:
-        return super().get_request({
-            "type": self.type,
+        return super().get_request() | {
+            "type": self.like_object_type,
             "owner_id": self.owner_id,
             "item_id": self.item_id
-        })
+        }
