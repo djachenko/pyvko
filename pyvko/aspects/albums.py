@@ -37,12 +37,13 @@ class Album(ApiBased, Attachment):
         return photos
 
     def get_request(self, parameters: Dict = None) -> dict:
-        parameters = parameters.copy()
+        if parameters is None:
+            parameters = {}
 
-        parameters.update({
+        parameters |= {
             "owner_id": self.__owner_id,
             "album_id": self.__id
-        })
+        }
 
         return super().get_request(parameters)
 
