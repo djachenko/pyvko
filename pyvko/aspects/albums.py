@@ -94,14 +94,17 @@ class Albums(ApiMixin, ABC):
     def get_all_albums(self) -> List[Album]:
         return self.__get_albums()
 
-    def get_album_by_id(self, album_id: int) -> Album:
+    def get_album_by_id(self, album_id: int) -> Album | None:
         albums_list = self.__get_albums({
             "album_ids": [album_id]
         })
 
-        assert len(albums_list) == 1
-
-        return albums_list[0]
+        if len(albums_list) == 1:
+            return albums_list[0]
+        elif len(albums_list) == 0:
+            return None
+        else:
+            assert False
 
     def create_album(self, name: str) -> Album:
         parameters = {
