@@ -6,6 +6,7 @@ from typing import Optional, List, Dict, Tuple
 from urllib.parse import urlparse
 
 from vk import API
+from vk.exceptions import VkAPIError, ErrorCodes
 
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.aspects.albums import Albums
@@ -15,14 +16,17 @@ from pyvko.aspects.posts import Posts
 class Event(ApiBased, Posts, Albums):
     class Category(Enum):
         CIRCUS = 1120
+        CONCERT = 1107
+        PARTY = 1103
+        EXHIBITION = 1104
 
     class Section(Enum):
-        PHOTOS = "photos"
         WALL = "wall"
+        DISCUSSION = "topics"
+        PHOTOS = "photos"
         VIDEOS = "video"
         MUSIC = "audio"
         FILES = "docs"
-        DISCUSSION = "topics"
         WIKI = "wiki"
         ARTICLES = "articles"
         NARRATIVES = "narratives"
@@ -60,7 +64,7 @@ class Event(ApiBased, Posts, Albums):
         LIMITED = 2
         RESTRICTED = 3
 
-    def __init__(self, api: API, event_object: Dict, settings_object: Dict) -> None:
+    def __init__(self, api: API, event_object: Dict, settings_object: Dict | None) -> None:
         super().__init__(api)
 
         self.__id: int = -event_object["id"]
@@ -73,23 +77,32 @@ class Event(ApiBased, Posts, Albums):
         else:
             self.end_date = None
 
-        category_value = settings_object["public_category"]
-        self.event_category: Event.Category | None
-
-        if category_value != 0:
-            self.event_category = Event.Category(category_value)
-        else:
-            self.event_category = None
-
-        self.__sections: Dict[Event.Section, Event.SectionState] = {
-            s: Event.SectionState(settings_object[s.value]) for s in Event.Section
-        }
-
-        self.main_section = Event.Section.from_index(settings_object["main_section"])
-        self.secondary_section = Event.Section.from_index(settings_object["secondary_section"])
         self.is_closed = bool(event_object["is_closed"])
         self.url = event_object["screen_name"]
-        self.organiser: int | None = settings_object.get("event_object_id")
+
+        self.event_category: Event.Category | None
+
+        if settings_object is None:
+            self.event_category = None
+            self.__sections: Dict[Event.Section, Event.SectionState] = {}
+            self.main_section = None
+            self.secondary_section = None
+            self.organiser = None
+        else:
+            category_value = settings_object["public_category"]
+
+            if category_value != 0:
+                self.event_category = Event.Category(category_value)
+            else:
+                self.event_category = None
+
+            self.__sections: Dict[Event.Section, Event.SectionState] = {
+                s: Event.SectionState(settings_object[s.value]) for s in Event.Section
+            }
+
+            self.main_section = Event.Section.from_index(settings_object["main_section"])
+            self.secondary_section = Event.Section.from_index(settings_object["secondary_section"])
+            self.organiser: int | None = settings_object.get("event_object_id")
 
     @property
     def id(self) -> int:
@@ -112,7 +125,7 @@ class Event(ApiBased, Posts, Albums):
         params = {
             "group_id": abs(self.__id),
             "access": int(self.is_closed),
-            "event_start_date": self.start_date.timestamp(),
+            "event_start_date": int(self.start_date.timestamp()),
             "title": self.name,
         }
 
@@ -123,7 +136,7 @@ class Event(ApiBased, Posts, Albums):
             params[section.value] = state.value
 
         if self.end_date is not None:
-            params["event_finish_date"] = self.end_date.timestamp()
+            params["event_finish_date"] = int(self.end_date.timestamp())
 
         if self.event_category is not None:
             params["public_category"] = self.event_category.value
@@ -165,13 +178,8 @@ class Events(ApiMixin, ABC):
             .removeprefix("event") \
             .removeprefix("-")
 
-        if not qualifier.isdecimal():
-            return None
-
-        group_id = int(qualifier)
-
         group_request = self.get_request({
-            "group_id": group_id,
+            "group_id": qualifier,
             "fields": [
                 "start_date",
                 "finish_date",
@@ -190,14 +198,20 @@ class Events(ApiMixin, ABC):
 
         event_response = self.api.groups.getById(**event_request)
 
-        event_object = event_response[0]
+        event_object = event_response["groups"][0]
 
         if event_object["type"] not in ["event", ]:
             return None
 
         group_request["group_id"] = event_object["id"]
 
-        settings_response = self.api.groups.getSettings(**group_request)
+        try:
+            settings_response = self.api.groups.getSettings(**group_request)
+        except VkAPIError as err:
+            if err.code != ErrorCodes.ACCESS_DENIED:
+                raise
+
+            settings_response = None
 
         event = Event(self.api, event_object=event_object, settings_object=settings_response)
 

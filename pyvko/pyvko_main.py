@@ -1,21 +1,17 @@
 from urllib.parse import urlparse
 
-import vk
-
 from pyvko.api_based import ApiBased
-from pyvko.config.config import Config
-from pyvko.entities.user import User
 from pyvko.aspects.events import Events, Event
 from pyvko.aspects.groups import Groups, Group
 from pyvko.aspects.utils import Utils
-from pyvko.shared.utils import Throttler, CaptchedSession
+from pyvko.config.config import Config
+from pyvko.entities.user import User
+from pyvko.shared.utils import Throttler, CaptchedApi
 
 
 class Pyvko(ApiBased, Utils, Events, Groups):
     def __init__(self, config: Config) -> None:
-        session = CaptchedSession(access_token=config.access_token)
-
-        api = Throttler(vk.API(session), interval=1)
+        api = Throttler(CaptchedApi(access_token=config.access_token), interval=1)
 
         # noinspection PyTypeChecker
         super().__init__(api)
@@ -38,6 +34,7 @@ class Pyvko(ApiBased, Utils, Events, Groups):
             ],
             "fields": [
                 "online",
+                "screen_name",
             ],
         })
 
@@ -57,7 +54,9 @@ class Pyvko(ApiBased, Utils, Events, Groups):
 
         return None
 
-    def get(self, request: str) -> Group | User | Event | None:
+    def get(self, request: str | int) -> Group | User | Event | None:
+        request = str(request)
+
         parse_result = urlparse(request)
 
         qualifier = parse_result.path.split("/")[-1]
@@ -74,7 +73,7 @@ class Pyvko(ApiBased, Utils, Events, Groups):
         }
 
         for prefix, handler in prefixes_mapping.items():
-            if not qualifier.startswith(prefix):
+            if not (qualifier.startswith(prefix) and qualifier.removeprefix(prefix).isdecimal()):
                 continue
 
             id_ = qualifier.removeprefix(prefix)
@@ -83,8 +82,12 @@ class Pyvko(ApiBased, Utils, Events, Groups):
 
         return self.get_by_url(qualifier)
 
-    #     full link
-    # short link
-    # name
-    # qualified id
-    # signed id
+    def execute(self, code: str):
+        request = self.get_request() | {
+            "code": code,
+        }
+
+        response = self.api.execute(**request)
+
+        return response
+

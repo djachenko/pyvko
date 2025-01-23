@@ -25,6 +25,13 @@ class User(ApiBased, Posts):
     def online(self) -> bool:
         return self.__online
 
+    @property
+    def url(self) -> str:
+        if self.__screen_name:
+            return f"https://vk.com/{self.__screen_name}"
+        else:
+            return f"https://vk.com/id{self.__id}"
+
     def __init__(self, api: API, user_object: Dict) -> None:
         super().__init__(api)
 
@@ -32,6 +39,7 @@ class User(ApiBased, Posts):
         self.__first_name = user_object["first_name"]
         self.__last_name = user_object["last_name"]
         self.__online = bool(user_object["online"])
+        self.__screen_name = user_object["screen_name"]
 
     def groups(self) -> List[Group]:
         request = self.get_request({

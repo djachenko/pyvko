@@ -40,7 +40,7 @@ class Comment(ApiBased, Likes):
         return self.id
 
     @property
-    def type(self) -> str:
+    def like_object_type(self) -> str:
         return "comment"
 
     @property
@@ -59,7 +59,15 @@ class Comment(ApiBased, Likes):
     def date(self) -> datetime:
         return self.__date
 
-    def __init__(self, api: API, comment_id: int, owner_id: int, date: datetime, text: str, attachments: List[Attachment]) -> None:
+    def __init__(
+            self,
+            api: API,
+            comment_id: int,
+            owner_id: int,
+            date: datetime,
+            text: str,
+            attachments: List[Attachment]
+    ) -> None:
         super().__init__(api)
 
         self.__id = comment_id
@@ -73,7 +81,7 @@ class Comment(ApiBased, Likes):
         if "attachments" in api_object:
             parser = AttachmentParser.shared()
 
-            attachments = [parser.parse_object(o) for o in api_object["attachments"]]
+            attachments = [parser.parse_object(o, api) for o in api_object["attachments"]]
         else:
             attachments = None
 

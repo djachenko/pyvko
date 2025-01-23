@@ -4,9 +4,10 @@ from datetime import timedelta, datetime, date, time
 from pathlib import Path
 from time import sleep
 
+from pyvko.aspects.albums import Album
+from pyvko.aspects.events import Event
 from pyvko.config.config import Config
-from pyvko.models.active_models import Event
-from pyvko.models.models import Post
+from pyvko.aspects.posts import Post
 from pyvko.pyvko_main import Pyvko
 
 
@@ -76,7 +77,7 @@ def test_creating_posts(pyvko: Pyvko):
 
 
 def test_posting_album(pyvko: Pyvko):
-    group = pyvko.get("mothilda")
+    group = pyvko.get_by_url("mothilda")
 
     photoset_path = Path("C:/Users/justin/photos/stages/stage2.develop/20.12.05.miss_stc/progress/")
 
@@ -113,7 +114,7 @@ def test_posting_album(pyvko: Pyvko):
 
 
 def get_all_members(pyvko: Pyvko):
-    group = pyvko.get("test")
+    group = pyvko.get_by_url("test")
 
     members = group.get_members()
     posts = group.get_posts()
@@ -121,31 +122,44 @@ def get_all_members(pyvko: Pyvko):
     a = 7
 
 
-def main():
-    pyvko = Pyvko(Config.read(Path("config/config.json")))
-
+def create_event(pyvko: Pyvko):
     groups = pyvko.groups
-
     group = groups.get_group("jvstin")
-
     event = group.create_event("this is test")
-
     now = datetime.now()
-
     event.name = f"Renamed event {now}"
     event.event_category = Event.Category.CIRCUS
     event.start_date = now + timedelta(hours=2)
     event.end_date = now + timedelta(hours=2, minutes=30)
-
     for section in Event.Section:
         event.set_section_state(section, Event.SectionState.DISABLED)
-
     event.set_section_state(Event.Section.PHOTOS, Event.SectionState.LIMITED)
     event.set_section_state(Event.Section.WALL, Event.SectionState.LIMITED)
     event.is_closed = True
     event.main_section = Event.Section.PHOTOS
-
     event.save()
+
+
+def append_album(pyvko: Pyvko):
+    justin = pyvko.get_group("jvstin")
+
+    post = justin.get_post(3917)
+
+    post.attachments.append(Album(pyvko.api, {
+        "title": "24.10.27.ff_init_forest",
+        "id": "303478601",
+        "owner_id": "-100568944",
+    }))
+
+    justin.update_post(post)
+
+
+def main():
+    pyvko = Pyvko(Config.read(Path("config/config.json")))
+
+    append_album(pyvko)
+
+    a = 7
 
 
 if __name__ == '__main__':

@@ -32,7 +32,7 @@ class Album(ApiBased, Attachment):
 
         photos_descriptions = get_all(parameters, self.api.photos.get)
 
-        photos = [Photo(photo_object) for photo_object in photos_descriptions]
+        photos = [Photo.from_photo_object(self.api, photo_object) for photo_object in photos_descriptions]
 
         return photos
 
