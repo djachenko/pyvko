@@ -63,6 +63,9 @@ class Post(ApiBased, Comments, Likes, Reposts):
         if attachments is None:
             attachments = []
 
+        if not text:
+            text = None
+
         self.date = date
         self.attachments = attachments
         self.id = None
