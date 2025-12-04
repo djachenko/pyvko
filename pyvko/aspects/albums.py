@@ -27,6 +27,10 @@ class Album(ApiBased, Attachment):
     def id(self) -> int:
         return self.__id
 
+    @property
+    def url(self) -> str:
+        return f"https://vk.com/album{self.owner_id}_{self.id}"
+
     def get_photos(self) -> List[Photo]:
         parameters = self.get_request()
 

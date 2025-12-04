@@ -67,9 +67,9 @@ class Pyvko(ApiBased, Utils, Events, Groups):
         prefixes_mapping = {
             "id": self.get_user,
             "event": self.get_event,
-            "club": self.get_group,
+            "club": lambda x: self.get_group(x) or self.get_event(x),
             "public": self.get_group,
-            "-": lambda x: self.get_group(x) or self.get_event(x)
+            "-": lambda x: self.get_group(x) or self.get_event(x),
         }
 
         for prefix, handler in prefixes_mapping.items():

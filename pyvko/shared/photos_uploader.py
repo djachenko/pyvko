@@ -39,14 +39,15 @@ class PhotoUploader(ApiBased):
 
         server_url = response["upload_url"]
 
-        data = {
-            "photo": path.open("rb")
-        }
+        with path.open("rb") as image:
+            data = {
+                "file1": (path.name, image, "image/jpeg"),
+            }
 
-        response = requests.post(
-            url=server_url,
-            files=data
-        )
+            response = requests.post(
+                server_url,
+                files=data
+            )
 
         json_response = json.loads(response.text)
 

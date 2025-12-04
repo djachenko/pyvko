@@ -1,4 +1,5 @@
 from abc import ABC
+from tokenize import group
 from typing import Dict, List
 
 from vk import API
@@ -76,6 +77,9 @@ class Group(ApiBased, Posts, Albums, Events):
 
 class Groups(ApiMixin, ABC):
     def get_group(self, url: str | int) -> Group | None:
+        if isinstance(url, int):
+            url = abs(url)
+
         group_request = self.get_request({
             "group_id": url
         })

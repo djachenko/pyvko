@@ -3,8 +3,10 @@ from typing import List, Dict
 from vk import API
 
 from pyvko.api_based import ApiBased
+from pyvko.aspects.events import Event
 from pyvko.aspects.groups import Group
 from pyvko.aspects.posts import Posts
+from pyvko.shared.utils import get_all
 
 
 class User(ApiBased, Posts):
@@ -54,3 +56,16 @@ class User(ApiBased, Posts):
         groups = [Group(api=self.api, group_object=group_object) for group_object in groups_objects]
 
         return groups
+
+    def events(self) -> List[Event]:
+        request = self.get_request() | {
+            "user_id": self.__id,
+            "extended": 1,
+            "filter": ",".join([
+                "events",
+            ]),
+        }
+
+        response = list(get_all(request, self.api.groups.get))
+
+        events = [Event(self.api, event, None) for event in response]

@@ -35,6 +35,11 @@ def get_all(parameters: Dict, get_response: Callable[[Json], Json], count_key: s
 
 
 class CaptchedApi(API):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        CaptchedApi.API_URL = CaptchedApi.API_URL.replace("com", "ru")
+
     def get_captcha_key(self, api_error: VkAPIError) -> str:
         while True:
             captcha_key = input(f"Captcha required with url: {api_error} (press Enter to open in browser): ")

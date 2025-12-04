@@ -1,7 +1,7 @@
 from abc import ABC
 from datetime import datetime
 from enum import Enum
-from functools import lru_cache
+from functools import cache
 from typing import Optional, List, Dict, Tuple
 from urllib.parse import urlparse
 
@@ -33,7 +33,7 @@ class Event(ApiBased, Posts, Albums):
         MESSAGES = "messages"
 
         @staticmethod
-        @lru_cache()
+        @cache
         def __section_index_mapping() -> List[Tuple['Event.Section', int]]:
             return [
                 (Event.Section.PHOTOS, 1),

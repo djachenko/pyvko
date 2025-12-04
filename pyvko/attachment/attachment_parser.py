@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import cache
 
 from vk import API
 
@@ -50,7 +50,7 @@ class Link(Attachment):
 
 class AttachmentParser:
     @classmethod
-    @lru_cache()
+    @cache
     def shared(cls):
         return cls()
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 from typing import List, Dict
 
@@ -25,7 +25,9 @@ class PostModel:
     date: datetime = None
 
     def to_request(self) -> dict:
-        request = {}
+        request = {
+            "primary_attachments_mode": "grid",
+        }
 
         if self.text is not None:
             request["message"] = self.text
@@ -101,7 +103,9 @@ class Post(ApiBased, Comments, Likes, Reposts):
         return post
 
     def to_request(self) -> dict:
-        request = {}
+        request = {
+            "primary_attachments_mode": "grid",
+        }
 
         if self.id is not None:
             request["post_id"] = self.id
@@ -188,7 +192,7 @@ class Posts(ApiMixin, ABC):
 
         self.api.wall.delete(**request)
 
-    @lru_cache()
+    @cache
     def __get_wall_uploader(self) -> PhotoUploader:
         # todo: split group and user (no id)
         return WallPhotoUploader(self.api, abs(self.id))
