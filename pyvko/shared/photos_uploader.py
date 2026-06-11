@@ -1,10 +1,11 @@
 import json
 from abc import abstractmethod
+from functools import cache
 from pathlib import Path
-from typing import Callable, Dict, List, Iterable
+from typing import Callable, Dict, List, Iterable, Any
 
 import requests as requests
-from vk import API
+from vk_api import VkUpload
 
 from pyvko.api_based import ApiBased
 from pyvko.attachment.photo import Photo
@@ -29,6 +30,11 @@ class PhotoUploader(ApiBased):
     @abstractmethod
     def get_params(self) -> Dict[str, int]:
         pass
+
+    @property
+    @cache
+    def uploader(self):
+        return VkUpload(self.new_api)
 
     def __upload_to_server(self, path: Path) -> Dict:
         params = self.get_params()
@@ -62,7 +68,7 @@ class PhotoUploader(ApiBased):
 
         photo_response = self.saver(**request)
 
-        photo = Photo.from_photo_object(self.api, photo_response[0])
+        photo = Photo.from_photo_object(self.new_api, photo_response[0])
 
         return photo
 
@@ -82,18 +88,18 @@ class PhotoUploader(ApiBased):
 
 
 class WallPhotoUploader(PhotoUploader):
-    def __init__(self, api: API, group_id: int) -> None:
+    def __init__(self, api: Any, group_id: int) -> None:
         super().__init__(api)
 
         self.__group_id = group_id
 
     @property
     def server_provider(self) -> Callable[[Dict], str]:
-        return self.api.photos.getWallUploadServer
+        return self.new_api.photos.getWallUploadServer
 
     @property
     def saver(self) -> Callable[[Dict], str]:
-        return self.api.photos.saveWallPhoto
+        return self.new_api.photos.saveWallPhoto
 
     @property
     def fields(self) -> Iterable[str]:
@@ -110,7 +116,7 @@ class WallPhotoUploader(PhotoUploader):
 
 
 class AlbumPhotoUploader(PhotoUploader):
-    def __init__(self, api: API, album_id: int, group_id: int) -> None:
+    def __init__(self, api: Any, album_id: int, group_id: int) -> None:
         super().__init__(api)
 
         self.__album_id = album_id
@@ -118,11 +124,11 @@ class AlbumPhotoUploader(PhotoUploader):
 
     @property
     def server_provider(self) -> Callable[[Dict], str]:
-        return self.api.photos.getUploadServer
+        return self.new_api.photos.getUploadServer
 
     @property
     def saver(self) -> Callable[[Dict], List[Dict]]:
-        return self.api.photos.save
+        return self.new_api.photos.save
 
     @property
     def fields(self) -> Iterable[str]:

@@ -2,11 +2,10 @@ from abc import ABC
 from datetime import datetime
 from enum import Enum
 from functools import cache
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Any
 from urllib.parse import urlparse
 
-from vk import API
-from vk.exceptions import VkAPIError, ErrorCodes
+from vk_api.exceptions import ApiError
 
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.aspects.albums import Albums
@@ -64,7 +63,7 @@ class Event(ApiBased, Posts, Albums):
         LIMITED = 2
         RESTRICTED = 3
 
-    def __init__(self, api: API, event_object: Dict, settings_object: Dict | None) -> None:
+    def __init__(self, api: Any, event_object: Dict, settings_object: Dict | None) -> None:
         super().__init__(api)
 
         self.__id: int = -event_object["id"]
@@ -152,7 +151,7 @@ class Event(ApiBased, Posts, Albums):
 
         request = self.get_request(params)
 
-        self.api.groups.edit(**request)
+        self.new_api.groups.edit(**request)
 
 
 class Events(ApiMixin, ABC):
@@ -162,7 +161,7 @@ class Events(ApiMixin, ABC):
             "type": "event",
         })
 
-        response = self.api.groups.create(**request)
+        response = self.new_api.groups.create(**request)
 
         event = self.get_event(response["id"])
 
@@ -196,7 +195,7 @@ class Events(ApiMixin, ABC):
 
         event_request.update(group_request)
 
-        event_response = self.api.groups.getById(**event_request)
+        event_response = self.new_api.groups.getById(**event_request)
 
         event_object = event_response["groups"][0]
 
@@ -206,13 +205,14 @@ class Events(ApiMixin, ABC):
         group_request["group_id"] = event_object["id"]
 
         try:
-            settings_response = self.api.groups.getSettings(**group_request)
-        except VkAPIError as err:
-            if err.code != ErrorCodes.ACCESS_DENIED:
+            settings_response = self.new_api.groups.getSettings(**group_request)
+        except ApiError as err:
+            # 15 — ACCESS_DENIED in VK API
+            if err.code != 15:
                 raise
 
             settings_response = None
 
-        event = Event(self.api, event_object=event_object, settings_object=settings_response)
+        event = Event(self.new_api, event_object=event_object, settings_object=settings_response)
 
         return event
