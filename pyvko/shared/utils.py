@@ -1,9 +1,5 @@
 import time
-import webbrowser
 from typing import Dict, Callable, List, Any, Iterable
-
-from vk import API
-from vk.exceptions import VkAPIError
 
 Json = Dict[str, 'Json'] | List['Json'] | str | int
 
@@ -32,24 +28,6 @@ def get_all(parameters: Dict, get_response: Callable[[Json], Json], count_key: s
 
         if count == total:
             break
-
-
-class CaptchedApi(API):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        CaptchedApi.API_URL = CaptchedApi.API_URL.replace("com", "ru")
-
-    def get_captcha_key(self, api_error: VkAPIError) -> str:
-        while True:
-            captcha_key = input(f"Captcha required with url: {api_error} (press Enter to open in browser): ")
-
-            if captcha_key:
-                break
-            else:
-                webbrowser.open(api_error.captcha_img)
-
-        return captcha_key
 
 
 class Throttler:
