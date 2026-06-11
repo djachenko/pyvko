@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from functools import cache
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Any
 
-from vk import API
+API = Any
 
 from pyvko.api_based import ApiBased, ApiMixin
 from pyvko.aspects.comments import Comments
@@ -58,7 +58,7 @@ class Post(ApiBased, Comments, Likes, Reposts):
     def owner_id(self) -> int:
         return self.__owner_id
 
-    def __init__(self, api: API, owner_id: int, text: str = None, attachments: List[Attachment] = None,
+    def __init__(self, api: Any, owner_id: int, text: str = None, attachments: List[Attachment] = None,
                  date: datetime = None) -> None:
         super().__init__(api)
 
@@ -79,7 +79,7 @@ class Post(ApiBased, Comments, Likes, Reposts):
         return f"Post: {self.id} | {self.text}"
 
     @staticmethod
-    def from_post_object(post_object: Dict, api: API) -> 'Post':
+    def from_post_object(post_object: Dict, api: Any) -> 'Post':
         if "attachments" in post_object:
             parser = AttachmentParser.shared()
 

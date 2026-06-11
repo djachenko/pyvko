@@ -1,7 +1,5 @@
 from enum import Enum
-from typing import Optional, Dict
-
-from vk import API
+from typing import Optional, Dict, Any
 
 from pyvko.api_based import ApiBased
 from pyvko.aspects.likes import Likes
@@ -22,7 +20,7 @@ class Photo(ApiBased, Attachment, Likes):
     def id(self) -> int:
         return self.__id
 
-    def __init__(self, api: API, photo_id: int, owner_id: int, size_links: Dict[Size, str], text: str) -> None:
+    def __init__(self, api: Any, photo_id: int, owner_id: int, size_links: Dict[Size, str], text: str) -> None:
         super().__init__(api)
 
         self.__id = photo_id

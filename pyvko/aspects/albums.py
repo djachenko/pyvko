@@ -1,8 +1,8 @@
 from abc import abstractmethod, ABC
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
-from vk import API
+from vk_api import VkApi
 
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.attachment.attachment import Attachment
@@ -12,7 +12,7 @@ from pyvko.shared.utils import get_all
 
 
 class Album(ApiBased, Attachment):
-    def __init__(self, api: API, api_object: dict) -> None:
+    def __init__(self, api: Any, api_object: dict) -> None:
         super().__init__(api)
 
         self.__name = api_object["title"]
