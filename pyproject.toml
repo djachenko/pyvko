@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyvko"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Igor Djachenko" }]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+test = ["pytest"]
+release = ["build", "python-semantic-release"]
+
+[project.urls]
+Homepage = "https://github.com/djachenko/pyvko"
+Repository = "https://github.com/djachenko/pyvko"
+Issues = "https://github.com/djachenko/pyvko/issues"
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+branch = "master"
+build_command = "pip install build && python -m build"
+changelog_file = "CHANGELOG.md"
+commit_message = "chore(release): v{version} [no ci]"
+major_on_zero = false
+allow_zero_version = true
