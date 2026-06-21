@@ -1,8 +1,6 @@
 from functools import cache
 from typing import Any
 
-API = Any
-
 from pyvko.aspects.albums import Album
 from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.photo import Photo
@@ -55,13 +53,13 @@ class AttachmentParser:
     def shared(cls):
         return cls()
 
-    def parse_photo(self, api_object: dict, api: API) -> Photo:
+    def parse_photo(self, api_object: dict, api: Any) -> Photo:
         return Photo.from_photo_object(api, api_object)
 
-    def parse_album(self, api_object: dict, api: API) -> Album:
+    def parse_album(self, api_object: dict, api: Any) -> Album:
         return Album(api, api_object)
 
-    def parse_object(self, api_object: dict, api: API) -> Attachment | None:
+    def parse_object(self, api_object: dict, api: Any) -> Attachment | None:
         if "photo" in api_object:
             return self.parse_photo(api_object["photo"], api)
         elif "album" in api_object:

@@ -2,7 +2,6 @@ from abc import abstractmethod, ABC
 from pathlib import Path
 from typing import Any, Dict, List
 
-from vk_api import VkApi
 
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.attachment.attachment import Attachment

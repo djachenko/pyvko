@@ -62,7 +62,7 @@ class Photo(ApiBased, Attachment, Likes):
         return self.__id
 
     @classmethod
-    def from_photo_object(cls, api: API, photo_object: Json):
+    def from_photo_object(cls, api: Any, photo_object: Json):
 
         id_ = photo_object["id"]
         owner_id = photo_object["owner_id"]

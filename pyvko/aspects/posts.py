@@ -5,8 +5,6 @@ from functools import cache
 from pathlib import Path
 from typing import List, Dict, Any
 
-API = Any
-
 from pyvko.api_based import ApiBased, ApiMixin
 from pyvko.aspects.comments import Comments
 from pyvko.aspects.likes import Likes
@@ -213,7 +211,7 @@ class Posts(ApiMixin, ABC):
 
         return request
 
-    def __get_owned_request(self, parameters: Dict = None) -> dict:
+    def __get_owned_request(self, parameters: Dict | None = None) -> dict:
         if parameters is None:
             parameters = {}
         else:

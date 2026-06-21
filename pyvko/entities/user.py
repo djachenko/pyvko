@@ -1,7 +1,5 @@
 from typing import List, Dict, Any
 
-API = Any
-
 from pyvko.api_based import ApiBased
 from pyvko.aspects.events import Event
 from pyvko.aspects.groups import Group
@@ -34,7 +32,7 @@ class User(ApiBased, Posts):
         else:
             return f"https://vk.com/id{self.__id}"
 
-    def __init__(self, api: API, user_object: Dict) -> None:
+    def __init__(self, api: Any, user_object: Dict) -> None:
         super().__init__(api)
 
         self.__id = user_object["id"]
@@ -49,11 +47,11 @@ class User(ApiBased, Posts):
             "extended": 1,
         })
 
-        groups_response = self.api.groups.get(**request)
+        groups_response = self.new_api.groups.get(**request)
 
         groups_objects = groups_response["items"]
 
-        groups = [Group(api=self.api, group_object=group_object) for group_object in groups_objects]
+        groups = [Group(api=self.new_api, group_object=group_object) for group_object in groups_objects]
 
         return groups
 
@@ -66,8 +64,8 @@ class User(ApiBased, Posts):
             ]),
         }
 
-        response = list(get_all(request, self.api.groups.get))
+        response = list(get_all(request, self.new_api.groups.get))
 
-        events = [Event(self.api, event, None) for event in response]
+        events = [Event(self.new_api, event, None) for event in response]
 
         return events
