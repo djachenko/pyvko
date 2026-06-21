@@ -1,5 +1,4 @@
 from abc import ABC
-from tokenize import group
 from typing import Dict, List, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -85,13 +84,13 @@ class Groups(ApiMixin, ABC):
             "group_id": url
         })
 
-        group_response = self.api.groups.getById(**group_request)
+        group_response = self.new_api.groups.getById(**group_request)
 
         group_object = group_response["groups"][0]
 
         if group_object["type"] not in ["page", "group"]:
             return None
 
-        group = Group(api=self.api, group_object=group_object)
+        group = Group(api=self.new_api, group_object=group_object)
 
         return group

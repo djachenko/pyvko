@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Any, Dict
 
 from vk_api import VkApi
@@ -9,10 +9,10 @@ class RequestRoot:
         return parameters or {}
 
 
-class ApiMixin(RequestRoot):
+class ApiMixin(RequestRoot, ABC):
     @property
     @abstractmethod
-    def new_api(self) -> Any:
+    def new_api(self) -> VkApi:
         pass
 
     @abstractmethod

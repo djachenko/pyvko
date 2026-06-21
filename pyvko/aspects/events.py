@@ -208,7 +208,7 @@ class Events(ApiMixin, ABC):
             settings_response = self.new_api.groups.getSettings(**group_request)
         except ApiError as err:
             # 15 — ACCESS_DENIED in VK API
-            if err.code != 15:
+            if err.code not in [3, 15]:
                 raise
 
             settings_response = None
