@@ -1,7 +1,7 @@
-from abc import abstractmethod
-from typing import Dict
+from abc import abstractmethod, ABC
+from typing import Any, Dict
 
-from vk import API
+from vk_api import VkApi
 
 
 class RequestRoot:
@@ -9,10 +9,10 @@ class RequestRoot:
         return parameters or {}
 
 
-class ApiMixin(RequestRoot):
+class ApiMixin(RequestRoot, ABC):
     @property
     @abstractmethod
-    def api(self) -> API:
+    def new_api(self) -> VkApi:
         pass
 
     @abstractmethod
@@ -23,19 +23,19 @@ class ApiMixin(RequestRoot):
 class ApiBased(RequestRoot):
     __VERSION = 5.199
 
-    def __init__(self, api: API) -> None:
+    def __init__(self, api: Any) -> None:
         super().__init__()
 
         self.__api = api
 
     @property
-    def api(self) -> API:
+    def new_api(self) -> Any:
         return self.__api
 
     @staticmethod
     def __get_default_object():
         return {
-            "v": ApiBased.__VERSION
+            # "v": ApiBased.__VERSION,
         }
 
     def get_request(self, parameters: Dict = None) -> Dict:

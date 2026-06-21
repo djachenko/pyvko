@@ -1,6 +1,6 @@
-from typing import List, Dict
+from typing import List, Dict, Any
 
-from vk import API
+API = Any
 
 from pyvko.api_based import ApiBased
 from pyvko.aspects.events import Event

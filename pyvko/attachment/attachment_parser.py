@@ -1,6 +1,7 @@
 from functools import cache
+from typing import Any
 
-from vk import API
+API = Any
 
 from pyvko.aspects.albums import Album
 from pyvko.attachment.attachment import Attachment
