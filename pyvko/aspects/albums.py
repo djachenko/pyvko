@@ -39,7 +39,7 @@ class Album(ApiBased, Attachment):
 
         return photos
 
-    def get_request(self, parameters: Dict = None) -> dict:
+    def get_request(self, parameters: Dict | None = None) -> dict:
         if parameters is None:
             parameters = {}
 
@@ -85,7 +85,7 @@ class Albums(ApiMixin, ABC):
     def id(self) -> int:
         pass
 
-    def __get_albums(self, parameters: Dict = None) -> List[Album]:
+    def __get_albums(self, parameters: Dict | None = None) -> List[Album]:
         request = self.__get_owned_request(parameters)
 
         result = self.api.photos.getAlbums(**request)
@@ -124,7 +124,7 @@ class Albums(ApiMixin, ABC):
 
         return created_album
 
-    def __get_owned_request(self, parameters: Dict = None) -> dict:
+    def __get_owned_request(self, parameters: Dict | None = None) -> dict:
         if parameters is None:
             parameters = {}
         else:

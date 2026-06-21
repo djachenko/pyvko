@@ -5,7 +5,7 @@ from vk_api import VkApi
 
 
 class RequestRoot:
-    def get_request(self, parameters: Dict = None):
+    def get_request(self, parameters: Dict | None = None):
         return parameters or {}
 
 
@@ -20,7 +20,7 @@ class ApiMixin(RequestRoot, ABC):
         assert False, f"{type(self).__name__} still uses unmigrated api — switch to new_api"
 
     @abstractmethod
-    def get_request(self, parameters: Dict = None) -> Dict:
+    def get_request(self, parameters: Dict | None = None) -> Dict:
         return super().get_request(parameters)
 
 
@@ -46,7 +46,7 @@ class ApiBased(RequestRoot):
             # "v": ApiBased.__VERSION,
         }
 
-    def get_request(self, parameters: Dict = None) -> Dict:
+    def get_request(self, parameters: Dict | None = None) -> Dict:
         if parameters is None:
             parameters = {}
 
