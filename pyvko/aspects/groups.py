@@ -1,6 +1,5 @@
 from abc import ABC
-from tokenize import group
-from typing import Dict, List
+from typing import Any, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyvko.entities.user import User
@@ -55,9 +54,9 @@ class Group(ApiBased, Posts, Albums, Events):
 
         parameters = self.get_request(parameters)
 
-        users_descriptions = get_all(parameters, self.api.groups.getMembers)
+        users_descriptions = get_all(parameters, self.new_api.groups.getMembers)
 
-        users = [User(api=self.api, user_object=description) for description in users_descriptions]
+        users = [User(api=self.new_api, user_object=description) for description in users_descriptions]
 
         return users
 
