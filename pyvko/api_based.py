@@ -15,6 +15,10 @@ class ApiMixin(RequestRoot, ABC):
     def new_api(self) -> VkApi:
         pass
 
+    @property
+    def api(self) -> Any:
+        assert False, f"{type(self).__name__} still uses unmigrated api — switch to new_api"
+
     @abstractmethod
     def get_request(self, parameters: Dict = None) -> Dict:
         return super().get_request(parameters)
@@ -31,6 +35,10 @@ class ApiBased(RequestRoot):
     @property
     def new_api(self) -> Any:
         return self.__api
+
+    @property
+    def api(self) -> Any:
+        assert False, f"{type(self).__name__} still uses unmigrated api — switch to new_api"
 
     @staticmethod
     def __get_default_object():
