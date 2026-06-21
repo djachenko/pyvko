@@ -1,4 +1,8 @@
 from urllib.parse import urlparse
+import webbrowser
+
+import vk_api
+from vk_api.exceptions import Captcha
 
 from pyvko.api_based import ApiBased
 from pyvko.aspects.events import Events, Event
@@ -6,12 +10,24 @@ from pyvko.aspects.groups import Groups, Group
 from pyvko.aspects.utils import Utils
 from pyvko.config.config import Config
 from pyvko.entities.user import User
-from pyvko.shared.utils import Throttler, CaptchedApi
+from pyvko.shared.utils import Throttler
 
 
 class Pyvko(ApiBased, Utils, Events, Groups):
     def __init__(self, config: Config) -> None:
-        api = Throttler(CaptchedApi(access_token=config.access_token), interval=1)
+        def captcha_handler(captcha: Captcha):
+            while True:
+                key = input(
+                    f"Captcha required with url: {captcha.get_url()} (press Enter to open in browser): "
+                )
+                if key:
+                    break
+                webbrowser.open(captcha.get_url())
+
+            return captcha.try_again(key)
+
+        session = vk_api.VkApi(token=config.access_token, captcha_handler=captcha_handler, api_version="5.199")
+        api = session.get_api()
 
         # noinspection PyTypeChecker
         super().__init__(api)

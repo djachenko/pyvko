@@ -1,9 +1,9 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Any
 
-from vk import API
+API = Any
 
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.attachment.attachment import Attachment

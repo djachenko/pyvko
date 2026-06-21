@@ -19,7 +19,7 @@ class Utils(ApiMixin, ABC):
             "screen_name": url
         })
 
-        response = self.api.utils.resolveScreenName(**request)
+        response = self.new_api.utils.resolveScreenName(**request)
 
         t = response["type"]
 

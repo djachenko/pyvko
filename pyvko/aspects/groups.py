@@ -1,8 +1,8 @@
 from abc import ABC
-from tokenize import group
-from typing import Dict, List
+from typing import Dict, List, Any, TYPE_CHECKING
 
-from vk import API
+if TYPE_CHECKING:
+    from pyvko.entities.user import User
 
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.aspects.albums import Albums
@@ -14,7 +14,7 @@ from pyvko.shared.utils import get_all
 class Group(ApiBased, Posts, Albums, Events):
     # from pyvko.entities.user import User
 
-    def __init__(self, api: API, group_object: Dict) -> None:
+    def __init__(self, api: Any, group_object: Dict) -> None:
         super().__init__(api)
 
         self.__group_object = group_object
@@ -84,13 +84,13 @@ class Groups(ApiMixin, ABC):
             "group_id": url
         })
 
-        group_response = self.api.groups.getById(**group_request)
+        group_response = self.new_api.groups.getById(**group_request)
 
         group_object = group_response["groups"][0]
 
         if group_object["type"] not in ["page", "group"]:
             return None
 
-        group = Group(api=self.api, group_object=group_object)
+        group = Group(api=self.new_api, group_object=group_object)
 
         return group
