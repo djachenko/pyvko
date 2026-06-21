@@ -33,15 +33,15 @@ class Link(Attachment):
 
     @property
     def type(self) -> str:
-        pass
+        raise NotImplementedError
 
     @property
     def owner_id(self) -> int:
-        pass
+        raise NotImplementedError
 
     @property
     def media_id(self) -> int:
-        pass
+        raise NotImplementedError
 
     def to_attach(self) -> str:
         return self.__url
