@@ -12,8 +12,15 @@ authors = [{ name = "Igor Djachenko" }]
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
-test = ["pytest"]
-release = ["build", "python-semantic-release"]
+test = [
+    "pytest",
+    "ruff",
+    "mypy",
+]
+release = [
+    "build",
+    "python-semantic-release",
+]
 
 [project.urls]
 Homepage = "https://github.com/djachenko/pyvko"

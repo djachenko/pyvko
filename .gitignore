@@ -14,3 +14,4 @@ pyvko\.egg-info/
 test_photos/
 
 build/
+.repokit
