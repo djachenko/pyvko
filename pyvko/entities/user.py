@@ -69,3 +69,5 @@ class User(ApiBased, Posts):
         response = list(get_all(request, self.api.groups.get))
 
         events = [Event(self.api, event, None) for event in response]
+
+        return events

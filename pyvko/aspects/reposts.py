@@ -39,8 +39,6 @@ class Reposts(ApiMixin, ABC):
         groups = response["groups"]
         groups = [group for group in groups if group["id"] not in self.__ignore_groups]
 
-        a = 7
-
     def get_request(self, parameters: Dict = None) -> Dict:
         return super().get_request() | {
             "owner_id": self.owner_id,

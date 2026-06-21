@@ -1,5 +1,4 @@
 from abc import ABC
-from tokenize import group
 from typing import Dict, List
 
 from vk import API
@@ -8,6 +7,7 @@ from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.aspects.albums import Albums
 from pyvko.aspects.events import Events, Event
 from pyvko.aspects.posts import Posts
+from pyvko.entities.user import User
 from pyvko.shared.utils import get_all
 
 
@@ -43,8 +43,6 @@ class Group(ApiBased, Posts, Albums, Events):
         return self.__url
 
     def get_members(self) -> List['User']:
-        from pyvko.entities.user import User
-
         parameters = {
             "group_id": self.id,
             "sort": "time_desc",
