@@ -15,7 +15,7 @@ class CommentModel:
     text: str
     from_group: int = 0
 
-    attachments: List[Attachment] = None
+    attachments: List[Attachment] | None = None
 
     def to_request(self):
         request = {}
@@ -64,7 +64,7 @@ class Comment(ApiBased, Likes):
             owner_id: int,
             date: datetime,
             text: str,
-            attachments: List[Attachment]
+            attachments: List[Attachment] | None
     ) -> None:
         super().__init__(api)
 
