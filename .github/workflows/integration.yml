@@ -7,7 +7,7 @@ on:
 
 jobs:
   integration:
-    uses: djachenko/repokit/.github/workflows/python-integration.yml@0.4
+    uses: djachenko/repokit/.github/workflows/python-integration.yml@0.5
     secrets: inherit
 
   publish:
