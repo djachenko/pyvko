@@ -16,6 +16,7 @@ test = [
     "pytest",
     "ruff",
     "mypy",
+    "types-requests",
 ]
 release = [
     "build",
@@ -29,6 +30,9 @@ Issues = "https://github.com/djachenko/pyvko/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "pyvko.pyvko_runner"
