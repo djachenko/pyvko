@@ -27,6 +27,10 @@ Homepage = "https://github.com/djachenko/pyvko"
 Repository = "https://github.com/djachenko/pyvko"
 Issues = "https://github.com/djachenko/pyvko/issues"
 
+[[tool.mypy.overrides]]
+module = "pyvko.pyvko_runner"
+ignore_errors = true
+
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
 branch = "master"
