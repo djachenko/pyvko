@@ -16,7 +16,6 @@ test = [
     "pytest",
     "ruff",
     "mypy",
-    "types-requests",
 ]
 release = [
     "build",
@@ -31,7 +30,8 @@ Issues = "https://github.com/djachenko/pyvko/issues"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.mypy]
+[[tool.mypy.overrides]]
+module = "vk_api.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
