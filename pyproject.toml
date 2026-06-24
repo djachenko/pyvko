@@ -1,48 +1,48 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyvko"
-version = "0.1.11"
-description = "VK API utilities"
+version = "0.1.0"
+description = "VK API typed wrapper library"
 readme = "README.md"
-authors = [
-    { name = "Harry Djachenko", email = "i.s.djachenko@gmail.com" }
-]
 license = { text = "MIT" }
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
+authors = [{ name = "Igor Djachenko" }]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "ruff",
+    "mypy",
 ]
-keywords = ["vk", "api", "social"]
-dependencies = [
-    "vk_api",
-    "requests>=2.25.0",
+release = [
+    "build",
+    "python-semantic-release",
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/pyvko"
-"Bug Tracker" = "https://github.com/yourusername/pyvko/issues"
-"Source Code" = "https://github.com/yourusername/pyvko"
+Homepage = "https://github.com/djachenko/pyvko"
+Repository = "https://github.com/djachenko/pyvko"
+Issues = "https://github.com/djachenko/pyvko/issues"
 
-[project.optional-dependencies]
-dev = ["pytest>=8.0"]
+[tool.setuptools.packages.find]
+where = ["src"]
 
-[tool.setuptools]
-include-package-data = true
+[[tool.mypy.overrides]]
+module = "vk_api.*"
+ignore_missing_imports = true
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-markers = [
-    "smoke: базовая связность, read-only",
-    "create: создаёт ресурс в VK",
-    "destructive: удаляет ресурс в VK",
-]
+[[tool.mypy.overrides]]
+module = "pyvko.pyvko_runner"
+ignore_errors = true
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+branch = "master"
+build_command = "pip install build && python -m build"
+changelog_file = "CHANGELOG.md"
+commit_message = "chore(release): v{version} [no ci]"
+major_on_zero = false
+allow_zero_version = true

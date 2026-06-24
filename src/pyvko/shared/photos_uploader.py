@@ -2,7 +2,7 @@ import json
 from abc import abstractmethod
 from functools import cache
 from pathlib import Path
-from typing import Callable, Dict, List, Iterable, Any
+from typing import Callable, Dict, Iterable, Any
 
 import requests as requests
 from vk_api import VkUpload
@@ -14,12 +14,12 @@ from pyvko.attachment.photo import Photo
 class PhotoUploader(ApiBased):
     @property
     @abstractmethod
-    def server_provider(self) -> Callable[[Dict], Dict[str, str]]:
+    def server_provider(self) -> Callable[..., Any]:
         pass
 
     @property
     @abstractmethod
-    def saver(self) -> Callable[[Dict], List[Dict]]:
+    def saver(self) -> Callable[..., Any]:
         pass
 
     @property
@@ -94,11 +94,11 @@ class WallPhotoUploader(PhotoUploader):
         self.__group_id = group_id
 
     @property
-    def server_provider(self) -> Callable[[Dict], str]:
+    def server_provider(self) -> Callable[..., Any]:
         return self.new_api.photos.getWallUploadServer
 
     @property
-    def saver(self) -> Callable[[Dict], str]:
+    def saver(self) -> Callable[..., Any]:
         return self.new_api.photos.saveWallPhoto
 
     @property
@@ -123,11 +123,11 @@ class AlbumPhotoUploader(PhotoUploader):
         self.__group_id = group_id
 
     @property
-    def server_provider(self) -> Callable[[Dict], str]:
+    def server_provider(self) -> Callable[..., Any]:
         return self.new_api.photos.getUploadServer
 
     @property
-    def saver(self) -> Callable[[Dict], List[Dict]]:
+    def saver(self) -> Callable[..., Any]:
         return self.new_api.photos.save
 
     @property

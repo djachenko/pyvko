@@ -4,7 +4,6 @@ from typing import Optional, Dict, Any
 from pyvko.api_based import ApiBased
 from pyvko.aspects.likes import Likes
 from pyvko.attachment.attachment import Attachment
-from pyvko.shared.utils import Json
 
 
 class Photo(ApiBased, Attachment, Likes):
@@ -62,7 +61,7 @@ class Photo(ApiBased, Attachment, Likes):
         return self.__id
 
     @classmethod
-    def from_photo_object(cls, api: API, photo_object: Json):
+    def from_photo_object(cls, api: Any, photo_object: Any):
 
         id_ = photo_object["id"]
         owner_id = photo_object["owner_id"]

@@ -56,7 +56,7 @@ class Likes(ApiMixin, ABC):
 
         self.api.likes.add(**request)
 
-    def get_request(self, parameters: Dict = None) -> Dict:
+    def get_request(self, parameters: Dict | None = None) -> Dict:
         return super().get_request() | {
             "type": self.like_object_type,
             "owner_id": self.owner_id,

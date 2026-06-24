@@ -9,9 +9,7 @@ class Reposts(ApiMixin, ABC):
         100,
     ]
 
-    __IGNORE_GROUPS = [
-
-    ]
+    __IGNORE_GROUPS: List[int] = []
 
     @property
     def __ignore_groups(self) -> List[int]:
@@ -39,9 +37,7 @@ class Reposts(ApiMixin, ABC):
         groups = response["groups"]
         groups = [group for group in groups if group["id"] not in self.__ignore_groups]
 
-        a = 7
-
-    def get_request(self, parameters: Dict = None) -> Dict:
+    def get_request(self, parameters: Dict | None = None) -> Dict:
         return super().get_request() | {
             "owner_id": self.owner_id,
             "post_id": self.post_id,

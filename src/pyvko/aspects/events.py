@@ -79,29 +79,25 @@ class Event(ApiBased, Posts, Albums):
         self.is_closed = bool(event_object["is_closed"])
         self.url = event_object["screen_name"]
 
-        self.event_category: Event.Category | None
+        self.event_category: Event.Category | None = None
+        self.__sections: Dict[Event.Section, Event.SectionState] = {}
+        self.main_section: Event.Section | None = None
+        self.secondary_section: Event.Section | None = None
+        self.organiser: int | None = None
 
-        if settings_object is None:
-            self.event_category = None
-            self.__sections: Dict[Event.Section, Event.SectionState] = {}
-            self.main_section = None
-            self.secondary_section = None
-            self.organiser = None
-        else:
+        if settings_object is not None:
             category_value = settings_object["public_category"]
 
             if category_value != 0:
                 self.event_category = Event.Category(category_value)
-            else:
-                self.event_category = None
 
-            self.__sections: Dict[Event.Section, Event.SectionState] = {
+            self.__sections = {
                 s: Event.SectionState(settings_object[s.value]) for s in Event.Section
             }
 
             self.main_section = Event.Section.from_index(settings_object["main_section"])
             self.secondary_section = Event.Section.from_index(settings_object["secondary_section"])
-            self.organiser: int | None = settings_object.get("event_object_id")
+            self.organiser = settings_object.get("event_object_id")
 
     @property
     def id(self) -> int:
@@ -164,6 +160,8 @@ class Events(ApiMixin, ABC):
         response = self.new_api.groups.create(**request)
 
         event = self.get_event(response["id"])
+
+        assert event is not None
 
         return event
 

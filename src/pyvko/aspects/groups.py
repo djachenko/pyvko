@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Dict, List, Any, TYPE_CHECKING
+from typing import Any, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyvko.entities.user import User
@@ -8,6 +8,7 @@ from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.aspects.albums import Albums
 from pyvko.aspects.events import Events, Event
 from pyvko.aspects.posts import Posts
+from pyvko.entities.user import User
 from pyvko.shared.utils import get_all
 
 
@@ -43,8 +44,6 @@ class Group(ApiBased, Posts, Albums, Events):
         return self.__url
 
     def get_members(self) -> List['User']:
-        from pyvko.entities.user import User
-
         parameters = {
             "group_id": self.id,
             "sort": "time_desc",
@@ -55,9 +54,9 @@ class Group(ApiBased, Posts, Albums, Events):
 
         parameters = self.get_request(parameters)
 
-        users_descriptions = get_all(parameters, self.api.groups.getMembers)
+        users_descriptions = get_all(parameters, self.new_api.groups.getMembers)
 
-        users = [User(api=self.api, user_object=description) for description in users_descriptions]
+        users = [User(api=self.new_api, user_object=description) for description in users_descriptions]
 
         return users
 

@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Dict, Any
 
-API = Any
-
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.attachment.attachment import Attachment
 from pyvko.attachment.attachment_parser import AttachmentParser
@@ -17,7 +15,7 @@ class CommentModel:
     text: str
     from_group: int = 0
 
-    attachments: List[Attachment] = None
+    attachments: List[Attachment] | None = None
 
     def to_request(self):
         request = {}
@@ -61,12 +59,12 @@ class Comment(ApiBased, Likes):
 
     def __init__(
             self,
-            api: API,
+            api: Any,
             comment_id: int,
             owner_id: int,
             date: datetime,
             text: str,
-            attachments: List[Attachment]
+            attachments: List[Attachment] | None
     ) -> None:
         super().__init__(api)
 
@@ -77,7 +75,7 @@ class Comment(ApiBased, Likes):
         self.__attachments = attachments
 
     @classmethod
-    def from_api_object(cls, api_object: Dict, api: API) -> 'Comment':
+    def from_api_object(cls, api_object: Dict, api: Any) -> 'Comment':
         if "attachments" in api_object:
             parser = AttachmentParser.shared()
 

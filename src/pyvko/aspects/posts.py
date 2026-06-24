@@ -5,8 +5,6 @@ from functools import cache
 from pathlib import Path
 from typing import List, Dict, Any
 
-API = Any
-
 from pyvko.api_based import ApiBased, ApiMixin
 from pyvko.aspects.comments import Comments
 from pyvko.aspects.likes import Likes
@@ -20,12 +18,12 @@ from pyvko.shared.utils import get_all
 
 @dataclass
 class PostModel:
-    text: str = None
-    attachments: List[Attachment] = None
-    date: datetime = None
+    text: str | None = None
+    attachments: List[Attachment] | None = None
+    date: datetime | None = None
 
     def to_request(self) -> dict:
-        request = {
+        request: dict[str, Any] = {
             "primary_attachments_mode": "grid",
         }
 
@@ -48,18 +46,20 @@ class Post(ApiBased, Comments, Likes, Reposts):
 
     @property
     def item_id(self) -> int:
+        assert self.id is not None
         return self.id
 
     @property
     def post_id(self) -> int:
+        assert self.id is not None
         return self.id
 
     @property
     def owner_id(self) -> int:
         return self.__owner_id
 
-    def __init__(self, api: Any, owner_id: int, text: str = None, attachments: List[Attachment] = None,
-                 date: datetime = None) -> None:
+    def __init__(self, api: Any, owner_id: int, text: str | None = None, attachments: List[Attachment] | None = None,
+                 date: datetime | None = None) -> None:
         super().__init__(api)
 
         if attachments is None:
@@ -68,11 +68,11 @@ class Post(ApiBased, Comments, Likes, Reposts):
         if not text:
             text = None
 
-        self.date = date
-        self.attachments = attachments
-        self.id = None
-        self.text = text
-        self.timer_id = None
+        self.date: datetime | None = date
+        self.attachments: List[Attachment] = attachments
+        self.id: int | None = None
+        self.text: str | None = text
+        self.timer_id: int | None = None
         self.__owner_id = owner_id
 
     def __str__(self) -> str:
@@ -103,7 +103,7 @@ class Post(ApiBased, Comments, Likes, Reposts):
         return post
 
     def to_request(self) -> dict:
-        request = {
+        request: dict[str, Any] = {
             "primary_attachments_mode": "grid",
         }
 
@@ -178,6 +178,8 @@ class Posts(ApiMixin, ABC):
 
         created_post = self.get_post(post_id)
 
+        assert created_post is not None
+
         return created_post
 
     def update_post(self, post: Post):
@@ -213,7 +215,7 @@ class Posts(ApiMixin, ABC):
 
         return request
 
-    def __get_owned_request(self, parameters: Dict = None) -> dict:
+    def __get_owned_request(self, parameters: Dict | None = None) -> dict:
         if parameters is None:
             parameters = {}
         else:

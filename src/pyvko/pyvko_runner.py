@@ -1,4 +1,3 @@
-import json
 import random
 from datetime import timedelta, datetime, date, time
 from pathlib import Path
@@ -6,8 +5,8 @@ from time import sleep
 
 from pyvko.aspects.albums import Album
 from pyvko.aspects.events import Event
-from pyvko.config.config import Config
 from pyvko.aspects.posts import Post
+from pyvko.config.config import Config
 from pyvko.pyvko_main import Pyvko
 
 
@@ -43,6 +42,8 @@ def create_scheduled_posts():
             text=f"post {i}\n\n{post_datetime}",
             date=post_datetime
         )
+
+        print(post)
 
         # test_group.add_post(post)
 
@@ -81,12 +82,12 @@ def test_posting_album(pyvko: Pyvko):
 
     photoset_path = Path("C:/Users/justin/photos/stages/stage2.develop/20.12.05.miss_stc/progress/")
 
-    post_config_path = photoset_path / "post_config.json"
+    # post_config_path = photoset_path / "post_config.json"
 
-    with post_config_path.open() as post_config_file:
-        post_config = json.load(post_config_file)
+    # with post_config_path.open() as post_config_file:
+    #     post_config = json.load(post_config_file)
 
-    cover_name = post_config["cover"]
+    # cover_name = post_config["cover"]
 
     photos_folder = photoset_path / "justin"
     photo_paths = list(photos_folder.iterdir())[:10]
@@ -114,12 +115,11 @@ def test_posting_album(pyvko: Pyvko):
 
 
 def get_all_members(pyvko: Pyvko):
-    group = pyvko.get_by_url("test")
+    pass
+    # group = pyvko.get_by_url("test")
 
-    members = group.get_members()
-    posts = group.get_posts()
-
-    a = 7
+    # members = group.get_members()
+    # posts = group.get_posts()
 
 
 def create_event(pyvko: Pyvko):
@@ -158,8 +158,6 @@ def main():
     pyvko = Pyvko(Config.read(Path("config/config.json")))
 
     append_album(pyvko)
-
-    a = 7
 
 
 if __name__ == '__main__':

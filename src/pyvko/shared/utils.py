@@ -4,8 +4,8 @@ from typing import Dict, Callable, List, Any, Iterable
 Json = Dict[str, 'Json'] | List['Json'] | str | int
 
 
-def get_all(parameters: Dict, get_response: Callable[[Json], Json], count_key: str = "count") -> \
-        Iterable[Dict]:
+def get_all(parameters: Dict, get_response: Callable[..., Any], count_key: str = "count") -> \
+        Iterable[Any]:
     parameters = parameters.copy()
     total = 0
 
@@ -13,7 +13,7 @@ def get_all(parameters: Dict, get_response: Callable[[Json], Json], count_key: s
         parameters["offset"] = total
 
         # noinspection PyArgumentList
-        response = get_response(**parameters)
+        response: Any = get_response(**parameters)
 
         assert "items" in response
         assert "count" in response
