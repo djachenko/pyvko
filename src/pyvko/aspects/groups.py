@@ -8,12 +8,10 @@ from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.aspects.albums import Albums
 from pyvko.aspects.events import Events, Event
 from pyvko.aspects.posts import Posts
-from pyvko.entities.user import User
 from pyvko.shared.utils import get_all
 
 
 class Group(ApiBased, Posts, Albums, Events):
-    # from pyvko.entities.user import User
 
     def __init__(self, api: Any, group_object: Dict) -> None:
         super().__init__(api)
@@ -55,6 +53,8 @@ class Group(ApiBased, Posts, Albums, Events):
         parameters = self.get_request(parameters)
 
         users_descriptions = get_all(parameters, self.new_api.groups.getMembers)
+
+        from pyvko.entities.user import User
 
         users = [User(api=self.new_api, user_object=description) for description in users_descriptions]
 
