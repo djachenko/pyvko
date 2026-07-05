@@ -1,8 +1,10 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyvko.aspects.groups import Group
 
 from pyvko.api_based import ApiBased
 from pyvko.aspects.events import Event
-from pyvko.aspects.groups import Group
 from pyvko.aspects.posts import Posts
 from pyvko.shared.utils import get_all
 
@@ -50,6 +52,8 @@ class User(ApiBased, Posts):
         groups_response = self.new_api.groups.get(**request)
 
         groups_objects = groups_response["items"]
+
+        from pyvko.aspects.groups import Group
 
         groups = [Group(api=self.new_api, group_object=group_object) for group_object in groups_objects]
 

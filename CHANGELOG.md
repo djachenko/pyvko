@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.1.13 (2026-07-05)
+
+### Bug Fixes
+
+- Resolve circular import between Group and User
+  ([`e1d923b`](https://github.com/djachenko/pyvko/commit/e1d923bbe33bdabd2abe912b1c16497224da48e2))
+
+
 ## v0.1.12 (2026-06-24)
 
 ### Bug Fixes
