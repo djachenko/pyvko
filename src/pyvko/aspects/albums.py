@@ -1,7 +1,8 @@
-from abc import abstractmethod, ABC
 from pathlib import Path
-from typing import Any, Dict, List
 
+from abc import abstractmethod, ABC
+from typing import Dict, List
+from vk_api import VkApi
 
 from pyvko.api_based import ApiMixin, ApiBased
 from pyvko.attachment.attachment import Attachment
@@ -11,7 +12,7 @@ from pyvko.shared.utils import get_all
 
 
 class Album(ApiBased, Attachment):
-    def __init__(self, api: Any, api_object: dict) -> None:
+    def __init__(self, api: VkApi, api_object: dict) -> None:
         super().__init__(api)
 
         self.__name = api_object["title"]
@@ -33,9 +34,9 @@ class Album(ApiBased, Attachment):
     def get_photos(self) -> List[Photo]:
         parameters = self.get_request()
 
-        photos_descriptions = get_all(parameters, self.api.photos.get)
+        photos_descriptions = get_all(parameters, self.new_api.photos.get)
 
-        photos = [Photo.from_photo_object(self.api, photo_object) for photo_object in photos_descriptions]
+        photos = [Photo.from_photo_object(self.new_api, photo_object) for photo_object in photos_descriptions]
 
         return photos
 
@@ -58,9 +59,12 @@ class Album(ApiBased, Attachment):
         self.api.photos.makeCover(**request)
 
     def add_photo(self, path: Path) -> Photo:
-        uploader = AlbumPhotoUploader(self.api, self.id, -self.__owner_id)
+        return self.add_photos([path])[0]
 
-        return uploader.upload(path)
+    def add_photos(self, paths: List[Path]) -> List[Photo]:
+        uploader = AlbumPhotoUploader(self.new_api, self.id, -self.__owner_id)
+
+        return uploader.upload_many(paths)
 
     # region Attachment
 
@@ -88,9 +92,9 @@ class Albums(ApiMixin, ABC):
     def __get_albums(self, parameters: Dict | None = None) -> List[Album]:
         request = self.__get_owned_request(parameters)
 
-        result = self.api.photos.getAlbums(**request)
+        result = self.new_api.photos.getAlbums(**request)
 
-        albums = [Album(self.api, album_object) for album_object in result["items"]]
+        albums = [Album(self.new_api, album_object) for album_object in result["items"]]
 
         return albums
 
@@ -118,9 +122,9 @@ class Albums(ApiMixin, ABC):
 
         parameters = self.get_request(parameters)
 
-        response = self.api.photos.createAlbum(**parameters)
+        response = self.new_api.photos.createAlbum(**parameters)
 
-        created_album = Album(self.api, response)
+        created_album = Album(self.new_api, response)
 
         return created_album
 

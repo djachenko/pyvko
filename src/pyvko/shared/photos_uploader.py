@@ -1,5 +1,5 @@
 import json
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from functools import cache
 from pathlib import Path
 from typing import Callable, Dict, Iterable, Any
@@ -11,7 +11,7 @@ from pyvko.api_based import ApiBased
 from pyvko.attachment.photo import Photo
 
 
-class PhotoUploader(ApiBased):
+class PhotoUploader(ApiBased, ABC):
     @property
     @abstractmethod
     def server_provider(self) -> Callable[..., Any]:
@@ -33,7 +33,7 @@ class PhotoUploader(ApiBased):
 
     @property
     @cache
-    def uploader(self):
+    def uploader(self) -> VkUpload:
         return VkUpload(self.new_api)
 
     def __upload_to_server(self, path: Path) -> Dict:
@@ -144,3 +144,12 @@ class AlbumPhotoUploader(PhotoUploader):
             "album_id": self.__album_id,
             "group_id": self.__group_id,
         }
+
+    def upload_many(self, paths: list[Path]) -> list[Photo]:
+        photo_objects = self.uploader.photo(
+            paths,
+            self.__album_id,
+            group_id=self.__group_id
+        )
+
+        return [Photo.from_photo_object(self.new_api, obj) for obj in photo_objects]
