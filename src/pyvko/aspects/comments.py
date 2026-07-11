@@ -112,7 +112,7 @@ class Comments(ApiMixin, ABC):
             "owner_id": self.owner_id,
         })
 
-        add_comment_response = self.api.wall.createComment(**add_comment_request)
+        add_comment_response = self.new_api.wall.createComment(**add_comment_request)
 
         comment_id = add_comment_response["comment_id"]
 
@@ -125,9 +125,9 @@ class Comments(ApiMixin, ABC):
             # "count": 10,
         })
 
-        comments_objects = list(get_all(request, self.api.wall.getComments, count_key="current_level_count"))
+        comments_objects = list(get_all(request, self.new_api.wall.getComments, count_key="current_level_count"))
 
-        comments = [Comment.from_api_object(comments_object, self.api) for comments_object in comments_objects]
+        comments = [Comment.from_api_object(comments_object, self.new_api) for comments_object in comments_objects]
 
         return comments
 
@@ -138,8 +138,8 @@ class Comments(ApiMixin, ABC):
             # "count": 10,
         })
 
-        comment_object = self.api.wall.getComment(**request)
+        comment_object = self.new_api.wall.getComment(**request)
 
-        comment = Comment.from_api_object(comment_object["items"][0], self.api)
+        comment = Comment.from_api_object(comment_object["items"][0], self.new_api)
 
         return comment
