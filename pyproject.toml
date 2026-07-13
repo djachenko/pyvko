@@ -18,6 +18,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-dotenv",
     "ruff<0.16",
     "mypy",
 ]
@@ -41,6 +42,9 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "pyvko.pyvko_runner"
 ignore_errors = true
+
+[tool.pytest.ini_options]
+env_files = [".env"]
 
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
