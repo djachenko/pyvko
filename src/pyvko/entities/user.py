@@ -38,8 +38,8 @@ class User(ApiBased, Posts):
         self.__id = user_object["id"]
         self.__first_name = user_object["first_name"]
         self.__last_name = user_object["last_name"]
-        self.__online = bool(user_object["online"])
-        self.__screen_name = user_object["screen_name"]
+        self.__online = bool(user_object.get("online", 0))
+        self.__screen_name = user_object.get("screen_name")
 
     def groups(self) -> List[Group]:
         request = self.get_request({

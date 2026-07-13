@@ -13,6 +13,7 @@ def test_auth_current_user(pyvko_client: Pyvko):
 @pytest.mark.smoke
 def test_resolve_group_name(pyvko_client: Pyvko, test_group):
     result = pyvko_client.resolve_name(test_group.url)
+
     assert result == "group"
 
 

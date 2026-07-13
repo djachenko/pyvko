@@ -70,16 +70,19 @@ class Event(ApiBased, Posts, Albums):
 
         self.__id: int = -event_object["id"]
         self.name = event_object["name"]
-        self.start_date: datetime = datetime.fromtimestamp(event_object["start_date"])
-        self.end_date: datetime | None
+        self.start_date: datetime | None = None
+        self.end_date: datetime | None = None
+        self.is_closed: bool | None = None
+        self.url: str | None = event_object.get("screen_name")
+
+        if "start_date" in event_object:
+            self.start_date = datetime.fromtimestamp(event_object["start_date"])
 
         if "finish_date" in event_object:
             self.end_date = datetime.fromtimestamp(event_object["finish_date"])
-        else:
-            self.end_date = None
 
-        self.is_closed = bool(event_object["is_closed"])
-        self.url = event_object["screen_name"]
+        if "is_closed" in event_object:
+            self.is_closed = bool(event_object["is_closed"])
 
         self.event_category: Event.Category | None = None
         self.__sections: Dict[Event.Section, Event.SectionState] = {}
