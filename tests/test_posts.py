@@ -1,5 +1,7 @@
 import pytest
 
+from pyvko.aspects.posts import PostModel
+
 
 @pytest.mark.create
 def test_post_created(created_post):
@@ -39,3 +41,23 @@ def test_get_posts_list_contains_created(test_group, created_post):
 def test_get_scheduled_posts(test_group):
     scheduled = test_group.get_scheduled_posts()
     assert isinstance(scheduled, list)
+
+
+@pytest.mark.create
+def test_wall_photo_uploaded(wall_photo):
+    assert isinstance(wall_photo.id, int)
+    assert wall_photo.id > 0
+
+
+@pytest.mark.create
+def test_wall_photo_has_url(wall_photo):
+    url = wall_photo.largest_link()
+    assert url
+    assert url.startswith("https://")
+
+
+@pytest.mark.create
+def test_post_with_photo_attachment(test_group, wall_photo):
+    post = test_group.add_post(PostModel(text="pyvko test with photo", attachments=[wall_photo]))
+    assert post.id > 0
+    test_group.delete_post(post.id)
