@@ -45,6 +45,10 @@ ignore_errors = true
 
 [tool.pytest.ini_options]
 env_files = [".env"]
+markers = [
+    "smoke: basic connectivity checks",
+    "create: tests that create VK objects (posts, albums, events)",
+]
 
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
