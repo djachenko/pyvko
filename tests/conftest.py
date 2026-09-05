@@ -60,3 +60,20 @@ def uploaded_photo(created_album):
     if not photo_path.exists():
         pytest.skip(f"Test photo not found: {photo_path}")
     return created_album.add_photo(photo_path)
+
+
+@pytest.fixture(scope="session")
+def test_event(pyvko_client: Pyvko):
+    event_id = _require_env("VK_TEST_EVENT_ID")
+    event = pyvko_client.get_event(int(event_id))
+    assert event is not None, f"Event not found: {event_id}"
+    return event
+
+
+@pytest.fixture(scope="session")
+def wall_photo(test_group):
+    photo_path_str = _require_env("VK_TEST_PHOTO")
+    photo_path = Path(photo_path_str)
+    if not photo_path.exists():
+        pytest.skip(f"Test photo not found: {photo_path}")
+    return test_group.upload_photo_to_wall(photo_path)
