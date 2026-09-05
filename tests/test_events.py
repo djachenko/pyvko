@@ -48,3 +48,22 @@ def test_get_event_by_id(pyvko_client: Pyvko, created_event):
     event = pyvko_client.get_event(abs(created_event.id))
     assert event is not None
     assert event.id == created_event.id
+
+
+def test_event_has_id(test_event):
+    assert isinstance(test_event.id, int)
+    assert test_event.id != 0
+
+
+def test_event_has_name(test_event):
+    assert isinstance(test_event.name, str)
+    assert test_event.name
+
+
+def test_event_has_start_date(test_event):
+    assert test_event.start_date is not None
+
+
+def test_event_get_posts(test_event):
+    posts = test_event.get_posts()
+    assert isinstance(posts, list)
