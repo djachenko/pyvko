@@ -2,6 +2,24 @@
 
 <!-- version list -->
 
+## v0.1.14 (2026-10-04)
+
+### Bug Fixes
+
+- Declare runtime dependencies in pyproject.toml
+  ([`961de41`](https://github.com/djachenko/pyvko/commit/961de418b26a5df8c25a9767c18492e267c7d231))
+
+### Build System
+
+- Pin ruff below 0.16 in test extras
+  ([`f09b0c2`](https://github.com/djachenko/pyvko/commit/f09b0c2203c450a77cdf321b56f685564583a51c))
+
+### Chores
+
+- Remove setup.py and requirements.txt duplicating pyproject.toml
+  ([`51ec2b5`](https://github.com/djachenko/pyvko/commit/51ec2b5b7004a01885958771a8debae64c71c88a))
+
+
 ## v0.1.13 (2026-07-05)
 
 ### Bug Fixes
