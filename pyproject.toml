@@ -18,7 +18,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest",
-    "ruff",
+    "ruff<0.16",
     "mypy",
 ]
 release = [
