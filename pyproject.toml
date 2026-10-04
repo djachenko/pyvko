@@ -10,11 +10,15 @@ readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Igor Djachenko" }]
 requires-python = ">=3.10"
+dependencies = [
+    "vk_api",
+    "requests",
+]
 
 [project.optional-dependencies]
 test = [
     "pytest",
-    "ruff",
+    "ruff<0.16",
     "mypy",
 ]
 release = [
