@@ -43,7 +43,7 @@ class User(ApiBased, Posts):
         self.__online = bool(user_object["online"])
         self.__screen_name = user_object["screen_name"]
 
-    def groups(self) -> List[Group]:
+    def groups(self) -> List['Group']:
         request = self.get_request({
             "user_id": self.__id,
             "extended": 1,
