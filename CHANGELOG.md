@@ -2,6 +2,35 @@
 
 <!-- version list -->
 
+## v0.1.15 (2026-10-06)
+
+### Bug Fixes
+
+- Quote Group annotation so pyvko imports on Python 3.10–3.13
+  ([`9e1cbeb`](https://github.com/djachenko/pyvko/commit/9e1cbeb8bb7ec9cf1997f654906be094dc5320cc))
+
+### Chores
+
+- [repokit] add Claude skill for repokit integration
+  ([`ed5818a`](https://github.com/djachenko/pyvko/commit/ed5818a6a40401ba4625fdd2e3064a6b21b75dfe))
+
+- [repokit] update ci workflows
+  ([`8f3a72e`](https://github.com/djachenko/pyvko/commit/8f3a72e0355e3338cd827263c6ed401bcee113c2))
+
+### Refactoring
+
+- Replace quoted annotations with postponed evaluation
+  ([`9b071b9`](https://github.com/djachenko/pyvko/commit/9b071b9b718b5be04c54011e5a348d681df69262))
+
+### Testing
+
+- Drop local python matrix covered by repokit integration
+  ([`d6af101`](https://github.com/djachenko/pyvko/commit/d6af1017594bb8b36567687b8416d8529198b607))
+
+- Import every module on Python 3.10–3.14
+  ([`bf9f82b`](https://github.com/djachenko/pyvko/commit/bf9f82b0489c0e948059e74457e50dd7e0536852))
+
+
 ## v0.1.14 (2026-10-04)
 
 ### Bug Fixes
