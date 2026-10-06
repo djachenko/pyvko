@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - '**'
+      - '!master'
     tags-ignore:
       - '**'
 
 jobs:
   tests:
-    uses: djachenko/repokit/.github/workflows/python-tests.yml@0.5
+    uses: djachenko/repokit/.github/workflows/python-tests.yml@0.11
     secrets: inherit
