@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from datetime import datetime
@@ -75,7 +77,7 @@ class Comment(ApiBased, Likes):
         self.__attachments = attachments
 
     @classmethod
-    def from_api_object(cls, api_object: Dict, api: Any) -> 'Comment':
+    def from_api_object(cls, api_object: Dict, api: Any) -> Comment:
         if "attachments" in api_object:
             parser = AttachmentParser.shared()
 

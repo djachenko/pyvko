@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 from typing import Any, Dict, List, TYPE_CHECKING
 
@@ -41,7 +43,7 @@ class Group(ApiBased, Posts, Albums, Events):
     def url(self) -> str:
         return self.__url
 
-    def get_members(self) -> List['User']:
+    def get_members(self) -> List[User]:
         parameters = {
             "group_id": self.id,
             "sort": "time_desc",

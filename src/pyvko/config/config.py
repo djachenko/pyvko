@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
 
@@ -9,7 +11,7 @@ class Config:
         self.__access_token = json_object["token"]
 
     @classmethod
-    def read(cls, path: Path) -> 'Config':
+    def read(cls, path: Path) -> Config:
         with path.open() as config:
             json_object = json.load(config)
 

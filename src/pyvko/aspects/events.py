@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 from datetime import datetime
 from enum import Enum
@@ -33,14 +35,14 @@ class Event(ApiBased, Posts, Albums):
 
         @staticmethod
         @cache
-        def __section_index_mapping() -> List[Tuple['Event.Section', int]]:
+        def __section_index_mapping() -> List[Tuple[Event.Section, int]]:
             return [
                 (Event.Section.PHOTOS, 1),
                 (Event.Section.VIDEOS, 4),
             ]
 
         @classmethod
-        def from_index(cls, index: int) -> Optional['Event.Section']:
+        def from_index(cls, index: int) -> Optional[Event.Section]:
 
             for section, section_index in Event.Section.__section_index_mapping():
                 if index == section_index:
