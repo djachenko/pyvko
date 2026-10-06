@@ -1,10 +1,8 @@
-from typing import List, Dict, Any, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from pyvko.aspects.groups import Group
+from typing import List, Dict, Any
 
 from pyvko.api_based import ApiBased
 from pyvko.aspects.events import Event
+from pyvko.aspects.groups import Group
 from pyvko.aspects.posts import Posts
 from pyvko.shared.utils import get_all
 
@@ -43,7 +41,7 @@ class User(ApiBased, Posts):
         self.__online = bool(user_object["online"])
         self.__screen_name = user_object["screen_name"]
 
-    def groups(self) -> List['Group']:
+    def groups(self) -> List[Group]:
         request = self.get_request({
             "user_id": self.__id,
             "extended": 1,
@@ -52,8 +50,6 @@ class User(ApiBased, Posts):
         groups_response = self.new_api.groups.get(**request)
 
         groups_objects = groups_response["items"]
-
-        from pyvko.aspects.groups import Group
 
         groups = [Group(api=self.new_api, group_object=group_object) for group_object in groups_objects]
 

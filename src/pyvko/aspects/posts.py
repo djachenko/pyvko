@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
@@ -79,7 +81,7 @@ class Post(ApiBased, Comments, Likes, Reposts):
         return f"Post: {self.id} | {self.text}"
 
     @staticmethod
-    def from_post_object(post_object: Dict, api: Any) -> 'Post':
+    def from_post_object(post_object: Dict, api: Any) -> Post:
         if "attachments" in post_object:
             parser = AttachmentParser.shared()
 

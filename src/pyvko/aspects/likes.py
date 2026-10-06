@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Dict
@@ -11,7 +13,7 @@ class Like:
     author_id: int
 
     @staticmethod
-    def from_api_object(o) -> 'Like':
+    def from_api_object(o) -> Like:
         return Like(author_id=o)
 
 
