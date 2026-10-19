@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from warnings import deprecated
-
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List, Dict
@@ -56,7 +54,6 @@ class Likes(ApiMixin, ABC):
 
         return response["liked"] == 1
 
-    @deprecated("likes.add was removed without warning")
     def like(self) -> None:
         raise MethodWasDeleted("likes.add")
 
