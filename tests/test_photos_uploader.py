@@ -8,20 +8,37 @@ from vk_api import VkApi
 
 from pyvko.shared.photos_uploader import AlbumPhotoUploader
 
-PHOTO_OBJECT = {"id": 1, "owner_id": -2, "sizes": [], "text": ""}
+_PHOTO_OBJECT = {
+    "id": 1,
+    "owner_id": -2,
+    "sizes": [],
+    "text": "",
+}
 
-RESPONSES = {
-    "photos.getUploadServer": {"upload_url": "https://upload.example/photos"},
-    "photos.save": [PHOTO_OBJECT],
+_RESPONSES = {
+    "photos.getUploadServer": {
+        "upload_url": "https://upload.example/photos",
+    },
+    "photos.save": [
+        _PHOTO_OBJECT,
+    ],
 }
 
 
 class FakeUploadResponse:
     def json(self) -> dict[str, Any]:
-        return {"aid": 3, "server": 4, "photos_list": "[]", "hash": "hash"}
+        return {
+            "aid": 3,
+            "server": 4,
+            "photos_list": "[]",
+            "hash": "hash",
+        }
 
 
-@pytest.mark.parametrize("relative", [False, True])
+@pytest.mark.parametrize("relative", [
+    False,
+    True,
+])
 def test_upload_many_accepts_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, relative: bool) -> None:
     photo = tmp_path / "photo.jpg"
     photo.write_bytes(b"jpeg")
@@ -33,7 +50,7 @@ def test_upload_many_accepts_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     sent_names: list[str] = []
 
     def fake_method(_: VkApi, method: str, values: dict[str, Any] | None = None, **__: Any) -> Any:
-        return RESPONSES[method]
+        return _RESPONSES[method]
 
     def fake_post(_: requests.Session, url: str, files: list[Any]) -> FakeUploadResponse:
         sent_names.extend(name for _, (name, _) in files)
@@ -55,7 +72,12 @@ def test_upload_single_photo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     photo = tmp_path / "photo.jpg"
     photo.write_bytes(b"jpeg")
 
-    upload_response = {"photos_list": "[]", "server": 4, "aid": 3, "hash": "hash"}
+    upload_response = {
+        "photos_list": "[]",
+        "server": 4,
+        "aid": 3,
+        "hash": "hash",
+    }
     calls: list[tuple[str, dict[str, Any]]] = []
 
     class FakeResponse:
@@ -64,7 +86,7 @@ def test_upload_single_photo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     def fake_method(_: VkApi, method: str, values: dict[str, Any] | None = None, **__: Any) -> Any:
         calls.append((method, values or {}))
 
-        return RESPONSES[method]
+        return _RESPONSES[method]
 
     def fake_post(url: str, files: dict[str, Any]) -> FakeResponse:
         return FakeResponse()
@@ -77,7 +99,12 @@ def test_upload_single_photo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     uploaded = uploader.upload(photo)
 
     assert uploaded.id == 1
+    request = {
+        "album_id": 3,
+        "group_id": 2,
+    }
+
     assert calls == [
-        ("photos.getUploadServer", {"album_id": 3, "group_id": 2}),
-        ("photos.save", {"album_id": 3, "group_id": 2} | upload_response),
+        ("photos.getUploadServer", request),
+        ("photos.save", request | upload_response),
     ]
