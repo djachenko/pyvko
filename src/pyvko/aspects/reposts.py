@@ -29,7 +29,7 @@ class Reposts(ApiMixin, ABC):
 
     def get_reposters(self):
         request = self.get_request()
-        response = self.api.wall.getReposts(**request)
+        response = self.old_api.wall.getReposts(**request)
 
         profiles = response["profiles"]
         profiles = [profile for profile in profiles if profile["id"] not in Reposts.__IGNORE_PROFILES]

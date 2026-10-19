@@ -34,7 +34,7 @@ class PhotoUploader(ApiBased, ABC):
     @property
     @cache
     def uploader(self) -> VkUpload:
-        return VkUpload(self.new_api)
+        return VkUpload(self.api)
 
     def __upload_to_server(self, path: Path) -> Dict:
         params = self.get_params()
@@ -68,7 +68,7 @@ class PhotoUploader(ApiBased, ABC):
 
         photo_response = self.saver(**request)
 
-        photo = Photo.from_photo_object(self.new_api, photo_response[0])
+        photo = Photo.from_photo_object(self.api, photo_response[0])
 
         return photo
 
@@ -95,11 +95,11 @@ class WallPhotoUploader(PhotoUploader):
 
     @property
     def server_provider(self) -> Callable[..., Any]:
-        return self.new_api.photos.getWallUploadServer
+        return self.api.photos.getWallUploadServer
 
     @property
     def saver(self) -> Callable[..., Any]:
-        return self.new_api.photos.saveWallPhoto
+        return self.api.photos.saveWallPhoto
 
     @property
     def fields(self) -> Iterable[str]:
@@ -124,11 +124,11 @@ class AlbumPhotoUploader(PhotoUploader):
 
     @property
     def server_provider(self) -> Callable[..., Any]:
-        return self.new_api.photos.getUploadServer
+        return self.api.photos.getUploadServer
 
     @property
     def saver(self) -> Callable[..., Any]:
-        return self.new_api.photos.save
+        return self.api.photos.save
 
     @property
     def fields(self) -> Iterable[str]:
@@ -152,4 +152,4 @@ class AlbumPhotoUploader(PhotoUploader):
             group_id=self.__group_id
         )
 
-        return [Photo.from_photo_object(self.new_api, obj) for obj in photo_objects]
+        return [Photo.from_photo_object(self.api, obj) for obj in photo_objects]

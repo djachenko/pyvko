@@ -12,12 +12,12 @@ class RequestRoot:
 class ApiMixin(RequestRoot, ABC):
     @property
     @abstractmethod
-    def new_api(self) -> VkApi:
+    def api(self) -> VkApi:
         pass
 
     @property
-    def api(self) -> Any:
-        assert False, f"{type(self).__name__} still uses unmigrated api — switch to new_api"
+    def old_api(self) -> Any:
+        assert False, f"{type(self).__name__} still uses unmigrated old_api — switch to api"
 
     @abstractmethod
     def get_request(self, parameters: Dict | None = None) -> Dict:
@@ -33,12 +33,12 @@ class ApiBased(RequestRoot):
         self.__api = api
 
     @property
-    def new_api(self) -> Any:
+    def api(self) -> Any:
         return self.__api
 
     @property
-    def api(self) -> Any:
-        assert False, f"{type(self).__name__} still uses unmigrated api — switch to new_api"
+    def old_api(self) -> Any:
+        assert False, f"{type(self).__name__} still uses unmigrated old_api — switch to api"
 
     @staticmethod
     def __get_default_object():

@@ -135,9 +135,9 @@ class Posts(ApiMixin, ABC):
 
         parameters = self.__get_owned_request(parameters)
 
-        posts_descriptions = get_all(parameters, self.new_api.wall.get)
+        posts_descriptions = get_all(parameters, self.api.wall.get)
 
-        posts = [Post.from_post_object(description, self.new_api) for description in posts_descriptions]
+        posts = [Post.from_post_object(description, self.api) for description in posts_descriptions]
 
         return posts
 
@@ -153,10 +153,10 @@ class Posts(ApiMixin, ABC):
             "posts": [f"{self.id}_{post_id}" for post_id in ids],
         })
 
-        posts = self.new_api.wall.getById(**request)["items"]
+        posts = self.api.wall.getById(**request)["items"]
         posts = [post for post in posts if not post.get("is_deleted", False)]
 
-        return [Post.from_post_object(post, self.new_api) for post in posts]
+        return [Post.from_post_object(post, self.api) for post in posts]
 
     def get_post(self, post_id: int) -> Post | None:
         posts = self.get_posts(post_id)
@@ -174,7 +174,7 @@ class Posts(ApiMixin, ABC):
     def add_post(self, post: PostModel) -> Post:
         request = self.__get_post_request(post)
 
-        result = self.new_api.wall.post(**request)
+        result = self.api.wall.post(**request)
 
         post_id = result["post_id"]
 
@@ -187,19 +187,19 @@ class Posts(ApiMixin, ABC):
     def update_post(self, post: Post):
         request = self.__get_post_request(post)
 
-        self.new_api.wall.edit(**request)
+        self.api.wall.edit(**request)
 
     def delete_post(self, post_id):
         request = self.__get_owned_request({
             "post_id": post_id
         })
 
-        self.api.wall.delete(**request)
+        self.old_api.wall.delete(**request)
 
     @cache
     def __get_wall_uploader(self) -> PhotoUploader:
         # todo: split group and user (no id)
-        return WallPhotoUploader(self.new_api, abs(self.id))
+        return WallPhotoUploader(self.api, abs(self.id))
 
     def upload_photo_to_wall(self, path: Path) -> Photo:
         uploader = self.__get_wall_uploader()

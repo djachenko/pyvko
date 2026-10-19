@@ -10,7 +10,7 @@ class Utils(ApiMixin, ABC):
             "private": 1,
         })
 
-        response = self.api.utils.getShortLink(**request)
+        response = self.old_api.utils.getShortLink(**request)
 
         return response["short_url"]
 
@@ -19,7 +19,7 @@ class Utils(ApiMixin, ABC):
             "screen_name": url
         })
 
-        response = self.new_api.utils.resolveScreenName(**request)
+        response = self.api.utils.resolveScreenName(**request)
 
         t = response["type"]
 
