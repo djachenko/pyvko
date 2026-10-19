@@ -11,12 +11,12 @@ def test_event_created(created_event):
 
 
 @pytest.mark.create
-def test_event_has_name(created_event):
+def test_created_event_has_name(created_event):
     assert created_event.name == "pyvko test event"
 
 
 @pytest.mark.create
-def test_event_has_start_date(created_event):
+def test_created_event_has_start_date(created_event):
     assert created_event.start_date is not None
 
 
