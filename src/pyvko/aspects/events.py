@@ -70,39 +70,44 @@ class Event(ApiBased, Posts, Albums):
 
         self.__id: int = -event_object["id"]
         self.name = event_object["name"]
-        self.start_date: datetime | None = None
-        self.end_date: datetime | None = None
-        self.is_closed: bool | None = None
         self.url: str | None = event_object.get("screen_name")
 
         if "start_date" in event_object:
-            self.start_date = datetime.fromtimestamp(event_object["start_date"])
+            self.start_date: datetime | None = datetime.fromtimestamp(event_object["start_date"])
+        else:
+            self.start_date = None
 
         if "finish_date" in event_object:
-            self.end_date = datetime.fromtimestamp(event_object["finish_date"])
+            self.end_date: datetime | None = datetime.fromtimestamp(event_object["finish_date"])
+        else:
+            self.end_date = None
 
         if "is_closed" in event_object:
-            self.is_closed = bool(event_object["is_closed"])
-
-        self.event_category: Event.Category | None = None
-        self.__sections: Dict[Event.Section, Event.SectionState] = {}
-        self.main_section: Event.Section | None = None
-        self.secondary_section: Event.Section | None = None
-        self.organiser: int | None = None
+            self.is_closed: bool | None = bool(event_object["is_closed"])
+        else:
+            self.is_closed = None
 
         if settings_object is not None:
             category_value = settings_object["public_category"]
 
             if category_value != 0:
-                self.event_category = Event.Category(category_value)
+                self.event_category: Event.Category | None = Event.Category(category_value)
+            else:
+                self.event_category = None
 
-            self.__sections = {
+            self.__sections: Dict[Event.Section, Event.SectionState] = {
                 s: Event.SectionState(settings_object[s.value]) for s in Event.Section
             }
 
-            self.main_section = Event.Section.from_index(settings_object["main_section"])
-            self.secondary_section = Event.Section.from_index(settings_object["secondary_section"])
-            self.organiser = settings_object.get("event_object_id")
+            self.main_section: Event.Section | None = Event.Section.from_index(settings_object["main_section"])
+            self.secondary_section: Event.Section | None = Event.Section.from_index(settings_object["secondary_section"])
+            self.organiser: int | None = settings_object.get("event_object_id")
+        else:
+            self.event_category = None
+            self.__sections = {}
+            self.main_section = None
+            self.secondary_section = None
+            self.organiser = None
 
     @property
     def id(self) -> int:
