@@ -2,6 +2,81 @@
 
 <!-- version list -->
 
+## v0.1.16 (2026-10-19)
+
+### Bug Fixes
+
+- Handle optional VK API fields via .get() in api_based, events, user
+  ([`257ef45`](https://github.com/djachenko/pyvko/commit/257ef4527cb37f06dc89a50cd242c1ff17c39304))
+
+- Pass positive group_id in Group.get_members
+  ([`39c7765`](https://github.com/djachenko/pyvko/commit/39c77655057e097179e4e4d1b34c88ea3e9f068c))
+
+### Chores
+
+- Ignore .env and CLAUDE.local.md, remove BACKLOG.md, add pytest-dotenv
+  ([`c9419b5`](https://github.com/djachenko/pyvko/commit/c9419b52bc25b203b6379a4b3ad07be41c5c1223))
+
+- Ignore _worktrees and memory dirs
+  ([`c1cd357`](https://github.com/djachenko/pyvko/commit/c1cd357407e1c60e3204fab9856042f44dc50109))
+
+- Register pytest markers smoke and create
+  ([`ebb207f`](https://github.com/djachenko/pyvko/commit/ebb207f168899bb9e82607beb03a6bc71efa05fc))
+
+### Code Style
+
+- Make id-sign method tables private with multiline dicts
+  ([`a7e6a9a`](https://github.com/djachenko/pyvko/commit/a7e6a9a67cb35590c519c8e13fc519b9fdc3fc5c))
+
+- Separate test phases with blank lines
+  ([`4b620ec`](https://github.com/djachenko/pyvko/commit/4b620ec3a797e6a0dfd993383208047c19e5b527))
+
+### Documentation
+
+- Drop status, backlog and Python version from CLAUDE.md
+  ([`0bce4b9`](https://github.com/djachenko/pyvko/commit/0bce4b988a7011257fc12aa7836df1f5979e693c))
+
+- Update CLAUDE.md — version, status, backlog
+  ([`6b04177`](https://github.com/djachenko/pyvko/commit/6b041770cfb3b3c57f4fbb289aab7d962e042bb8))
+
+### Refactoring
+
+- Clean up get_token — remove hardcoded Windows paths, all scopes, https redirect
+  ([`fab0ef8`](https://github.com/djachenko/pyvko/commit/fab0ef868cbc1afcad19e10975b9acc168dd7abc))
+
+- Replace None pre-init with explicit if/else in Event
+  ([`ac5a1ec`](https://github.com/djachenko/pyvko/commit/ac5a1ec9f566ac13dba130a64ff0cec9635f4de4))
+
+### Testing
+
+- Add integration tests
+  ([`2f15f88`](https://github.com/djachenko/pyvko/commit/2f15f88a9437bd529e6c04d6caf1178b6ec41470))
+
+- Add read-only tests for existing event via VK_TEST_EVENT_ID
+  ([`107fb20`](https://github.com/djachenko/pyvko/commit/107fb20f4e63f81875b698336d219985c8773791))
+
+- Add VK API surface detector for silently removed methods
+  ([`04431e2`](https://github.com/djachenko/pyvko/commit/04431e2223ad8ab9f333354d01b297510d67e5c6))
+
+- Add wall photo upload and post with attachment tests
+  ([`5181d43`](https://github.com/djachenko/pyvko/commit/5181d43169b82ca9eed354a81862540fd36fda77))
+
+- Add wall_photo and test_event fixtures to conftest
+  ([`82f775a`](https://github.com/djachenko/pyvko/commit/82f775a6afd5f48cfd029d4c08e2066f53201584))
+
+- Group mixed-fixture tests into classes
+  ([`8be8304`](https://github.com/djachenko/pyvko/commit/8be830471ceeeea8ee1b59f901285497d05f8d1b))
+
+- Pin group_id/owner_id sign convention against live VK API
+  ([`faf638a`](https://github.com/djachenko/pyvko/commit/faf638a380ac1bf298a31340b051f332d89912ed))
+
+- Pin group_id/owner_id sign per VK method
+  ([`2e41f85`](https://github.com/djachenko/pyvko/commit/2e41f85c5d3adb9f66adf7abf1ab3f2824ca1e7b))
+
+- Rename created_event tests shadowed by read-only event tests
+  ([`35d8f6f`](https://github.com/djachenko/pyvko/commit/35d8f6f34d9b30edf481377a73a4cad532fd5195))
+
+
 ## v0.1.15 (2026-10-06)
 
 ### Bug Fixes
