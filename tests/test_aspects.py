@@ -22,6 +22,7 @@ from pyvko.attachment.photo import Photo
 from pyvko.entities.user import User
 from pyvko.pyvko_main import Pyvko
 from pyvko.shared.exceptions import MethodWasDeleted
+from pyvko.shared.photos_uploader import AlbumPhotoUploader
 
 Response = Any | Callable[[dict[str, Any]], Any]
 
@@ -194,6 +195,23 @@ def test_album_get_photos() -> None:
 
     assert [(photo.id, photo.largest_link()) for photo in photos] == [(3, "https://photo/x")]
     assert vk.params("photos.get") == {"owner_id": -GROUP_ID, "album_id": 5, "offset": 0}
+
+
+def test_album_add_photos(monkeypatch: pytest.MonkeyPatch) -> None:
+    vk = FakeVk()
+    uploads: list[tuple[Any, int, list[Path]]] = []
+
+    def fake_upload_many(uploader: AlbumPhotoUploader, paths: list[Path]) -> list[Photo]:
+        uploads.append((uploader.api, uploader.get_params()["group_id"], paths))
+
+        return [Photo.from_photo_object(vk, PHOTO_OBJECT)]
+
+    monkeypatch.setattr(AlbumPhotoUploader, "upload_many", fake_upload_many)
+
+    photo = Album(vk, ALBUM_OBJECT).add_photo(Path("photo.jpg"))
+
+    assert photo.id == 3
+    assert uploads == [(vk, GROUP_ID, [Path("photo.jpg")])]
 
 
 def test_album_attachment() -> None:
