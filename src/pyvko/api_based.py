@@ -27,7 +27,7 @@ class ApiMixin(RequestRoot, ABC):
 class ApiBased(RequestRoot):
     __VERSION = 5.199
 
-    def __init__(self, api: Any) -> None:
+    def __init__(self, api: VkApi) -> None:
         super().__init__()
 
         self.__api = api

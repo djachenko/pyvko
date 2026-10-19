@@ -45,7 +45,7 @@ class Group(ApiBased, Posts, Albums, Events):
 
     def get_members(self) -> List[User]:
         parameters = {
-            "group_id": self.id,
+            "group_id": abs(self.id),
             "sort": "time_desc",
             "fields": [
                 "online",

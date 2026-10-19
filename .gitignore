@@ -15,3 +15,9 @@ test_photos/
 
 build/
 .repokit
+
+_worktrees/
+memory/
+
+.env
+CLAUDE.local.md
