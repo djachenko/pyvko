@@ -36,16 +36,41 @@ def test_get_group_normalises_sign(pyvko_client, test_group):
     assert positive.id == negative.id == test_group.id
 
 
-GROUP_ID_METHODS = [
-    pytest.param("groups.getMembers", {"count": 1}, id="groups.getMembers"),
+_GROUP_ID_METHODS = [
+    pytest.param(
+        "groups.getMembers",
+        {
+            "count": 1,
+        },
+        id="groups.getMembers",
+    ),
     pytest.param("groups.getById", {}, id="groups.getById"),
     pytest.param("photos.getWallUploadServer", {}, id="photos.getWallUploadServer"),
 ]
 
-OWNER_ID_METHODS = [
-    pytest.param("wall.get", {"count": 1}, id="wall.get"),
-    pytest.param("photos.get", {"album_id": "wall", "count": 1}, id="photos.get"),
-    pytest.param("photos.getAlbums", {"count": 1}, id="photos.getAlbums"),
+_OWNER_ID_METHODS = [
+    pytest.param(
+        "wall.get",
+        {
+            "count": 1,
+        },
+        id="wall.get",
+    ),
+    pytest.param(
+        "photos.get",
+        {
+            "album_id": "wall",
+            "count": 1,
+        },
+        id="photos.get",
+    ),
+    pytest.param(
+        "photos.getAlbums",
+        {
+            "count": 1,
+        },
+        id="photos.getAlbums",
+    ),
 ]
 
 
@@ -58,7 +83,7 @@ def _call(api, method: str, **params):
     return target(**params)
 
 
-@pytest.mark.parametrize(("method", "params"), GROUP_ID_METHODS)
+@pytest.mark.parametrize(("method", "params"), _GROUP_ID_METHODS)
 class TestGroupIdIsPositive:
     def test_accepts_positive(self, pyvko_client, test_group, method, params):
         _call(pyvko_client.new_api, method, group_id=abs(test_group.id), **params)
@@ -68,7 +93,7 @@ class TestGroupIdIsPositive:
             _call(pyvko_client.new_api, method, group_id=test_group.id, **params)
 
 
-@pytest.mark.parametrize(("method", "params"), OWNER_ID_METHODS)
+@pytest.mark.parametrize(("method", "params"), _OWNER_ID_METHODS)
 class TestOwnerIdIsNegative:
     def test_accepts_negative(self, pyvko_client, test_group, method, params):
         _call(pyvko_client.new_api, method, owner_id=test_group.id, **params)
