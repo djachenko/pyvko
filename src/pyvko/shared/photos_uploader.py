@@ -147,7 +147,7 @@ class AlbumPhotoUploader(PhotoUploader):
 
     def upload_many(self, paths: list[Path]) -> list[Photo]:
         photo_objects = self.uploader.photo(
-            paths,
+            [str(path) for path in paths],
             self.__album_id,
             group_id=self.__group_id
         )
