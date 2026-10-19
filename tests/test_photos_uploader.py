@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any
 
@@ -48,3 +49,35 @@ def test_upload_many_accepts_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPat
 
     assert sent_names == ["file0.jpg"]
     assert [photo.id for photo in photos] == [1]
+
+
+def test_upload_single_photo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    photo = tmp_path / "photo.jpg"
+    photo.write_bytes(b"jpeg")
+
+    upload_response = {"photos_list": "[]", "server": 4, "aid": 3, "hash": "hash"}
+    calls: list[tuple[str, dict[str, Any]]] = []
+
+    class FakeResponse:
+        text = json.dumps(upload_response)
+
+    def fake_method(_: VkApi, method: str, values: dict[str, Any] | None = None, **__: Any) -> Any:
+        calls.append((method, values or {}))
+
+        return RESPONSES[method]
+
+    def fake_post(url: str, files: dict[str, Any]) -> FakeResponse:
+        return FakeResponse()
+
+    monkeypatch.setattr(VkApi, "method", fake_method)
+    monkeypatch.setattr(requests, "post", fake_post)
+
+    uploader = AlbumPhotoUploader(VkApi(token="fake").get_api(), album_id=3, group_id=2)
+
+    uploaded = uploader.upload(photo)
+
+    assert uploaded.id == 1
+    assert calls == [
+        ("photos.getUploadServer", {"album_id": 3, "group_id": 2}),
+        ("photos.save", {"album_id": 3, "group_id": 2} | upload_response),
+    ]
