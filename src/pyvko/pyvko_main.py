@@ -34,11 +34,11 @@ class Pyvko(ApiBased, Utils, Events, Groups):
     def current_user(self) -> User:
         request = self.get_request()
 
-        user_response = self.api.users.get(**request)
+        user_response = self.new_api.users.get(**request)
 
         user_id = user_response[0]
 
-        user = User(api=self.api, user_object=user_id)
+        user = User(api=self.new_api, user_object=user_id)
 
         return user
 
@@ -53,9 +53,9 @@ class Pyvko(ApiBased, Utils, Events, Groups):
             ],
         })
 
-        user_response = self.api.users.get(**user_request)
+        user_response = self.new_api.users.get(**user_request)
 
-        user = User(api=self.api, user_object=user_response[0])
+        user = User(api=self.new_api, user_object=user_response[0])
 
         return user
 
@@ -102,7 +102,7 @@ class Pyvko(ApiBased, Utils, Events, Groups):
             "code": code,
         }
 
-        response = self.api.execute(**request)
+        response = self.new_api.execute(**request)
 
         return response
 

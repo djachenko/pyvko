@@ -157,7 +157,7 @@ class Event(ApiBased, Posts, Albums):
 
         request = self.get_request(params)
 
-        self.api.groups.edit(**request)
+        self.new_api.groups.edit(**request)
 
 
 class Events(ApiMixin, ABC):
@@ -167,7 +167,7 @@ class Events(ApiMixin, ABC):
             "type": "event",
         })
 
-        response = self.api.groups.create(**request)
+        response = self.new_api.groups.create(**request)
 
         event = self.get_event(response["id"])
 
@@ -203,7 +203,7 @@ class Events(ApiMixin, ABC):
 
         event_request.update(group_request)
 
-        event_response = self.api.groups.getById(**event_request)
+        event_response = self.new_api.groups.getById(**event_request)
 
         event_object = event_response["groups"][0]
 
@@ -213,7 +213,7 @@ class Events(ApiMixin, ABC):
         group_request["group_id"] = event_object["id"]
 
         try:
-            settings_response = self.api.groups.getSettings(**group_request)
+            settings_response = self.new_api.groups.getSettings(**group_request)
         except ApiError as err:
             # 15 — ACCESS_DENIED in VK API
             if err.code not in [3, 15]:
@@ -221,6 +221,6 @@ class Events(ApiMixin, ABC):
 
             settings_response = None
 
-        event = Event(self.api, event_object=event_object, settings_object=settings_response)
+        event = Event(self.new_api, event_object=event_object, settings_object=settings_response)
 
         return event

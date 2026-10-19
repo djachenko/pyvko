@@ -202,7 +202,7 @@ def test_album_add_photos(monkeypatch: pytest.MonkeyPatch) -> None:
     uploads: list[tuple[Any, int, list[Path]]] = []
 
     def fake_upload_many(uploader: AlbumPhotoUploader, paths: list[Path]) -> list[Photo]:
-        uploads.append((uploader.api, uploader.get_params()["group_id"], paths))
+        uploads.append((uploader.new_api, uploader.get_params()["group_id"], paths))
 
         return [Photo.from_photo_object(vk, PHOTO_OBJECT)]
 

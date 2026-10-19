@@ -54,11 +54,11 @@ class Group(ApiBased, Posts, Albums, Events):
 
         parameters = self.get_request(parameters)
 
-        users_descriptions = get_all(parameters, self.api.groups.getMembers)
+        users_descriptions = get_all(parameters, self.new_api.groups.getMembers)
 
         from pyvko.entities.user import User
 
-        users = [User(api=self.api, user_object=description) for description in users_descriptions]
+        users = [User(api=self.new_api, user_object=description) for description in users_descriptions]
 
         return users
 
@@ -85,13 +85,13 @@ class Groups(ApiMixin, ABC):
             "group_id": url
         })
 
-        group_response = self.api.groups.getById(**group_request)
+        group_response = self.new_api.groups.getById(**group_request)
 
         group_object = group_response["groups"][0]
 
         if group_object["type"] not in ["page", "group"]:
             return None
 
-        group = Group(api=self.api, group_object=group_object)
+        group = Group(api=self.new_api, group_object=group_object)
 
         return group

@@ -34,9 +34,9 @@ class Album(ApiBased, Attachment):
     def get_photos(self) -> List[Photo]:
         parameters = self.get_request()
 
-        photos_descriptions = get_all(parameters, self.api.photos.get)
+        photos_descriptions = get_all(parameters, self.new_api.photos.get)
 
-        photos = [Photo.from_photo_object(self.api, photo_object) for photo_object in photos_descriptions]
+        photos = [Photo.from_photo_object(self.new_api, photo_object) for photo_object in photos_descriptions]
 
         return photos
 
@@ -56,13 +56,13 @@ class Album(ApiBased, Attachment):
             "photo_id": cover.id
         })
 
-        self.old_api.photos.makeCover(**request)
+        self.api.photos.makeCover(**request)
 
     def add_photo(self, path: Path) -> Photo:
         return self.add_photos([path])[0]
 
     def add_photos(self, paths: List[Path]) -> List[Photo]:
-        uploader = AlbumPhotoUploader(self.api, self.id, -self.__owner_id)
+        uploader = AlbumPhotoUploader(self.new_api, self.id, -self.__owner_id)
 
         return uploader.upload_many(paths)
 
@@ -92,9 +92,9 @@ class Albums(ApiMixin, ABC):
     def __get_albums(self, parameters: Dict | None = None) -> List[Album]:
         request = self.__get_owned_request(parameters)
 
-        result = self.api.photos.getAlbums(**request)
+        result = self.new_api.photos.getAlbums(**request)
 
-        albums = [Album(self.api, album_object) for album_object in result["items"]]
+        albums = [Album(self.new_api, album_object) for album_object in result["items"]]
 
         return albums
 
@@ -122,9 +122,9 @@ class Albums(ApiMixin, ABC):
 
         parameters = self.get_request(parameters)
 
-        response = self.api.photos.createAlbum(**parameters)
+        response = self.new_api.photos.createAlbum(**parameters)
 
-        created_album = Album(self.api, response)
+        created_album = Album(self.new_api, response)
 
         return created_album
 

@@ -47,11 +47,11 @@ class User(ApiBased, Posts):
             "extended": 1,
         })
 
-        groups_response = self.api.groups.get(**request)
+        groups_response = self.new_api.groups.get(**request)
 
         groups_objects = groups_response["items"]
 
-        groups = [Group(api=self.api, group_object=group_object) for group_object in groups_objects]
+        groups = [Group(api=self.new_api, group_object=group_object) for group_object in groups_objects]
 
         return groups
 
@@ -64,8 +64,8 @@ class User(ApiBased, Posts):
             ]),
         }
 
-        response = list(get_all(request, self.api.groups.get))
+        response = list(get_all(request, self.new_api.groups.get))
 
-        events = [Event(self.api, event, None) for event in response]
+        events = [Event(self.new_api, event, None) for event in response]
 
         return events
