@@ -36,22 +36,46 @@ def test_get_group_normalises_sign(pyvko_client, test_group):
     assert positive.id == negative.id == test_group.id
 
 
-def test_vk_rejects_negative_group_id(pyvko_client, test_group):
-    api = pyvko_client.new_api
+GROUP_ID_METHODS = [
+    pytest.param("groups.getMembers", {"count": 1}, id="groups.getMembers"),
+    pytest.param("groups.getById", {}, id="groups.getById"),
+    pytest.param("photos.getWallUploadServer", {}, id="photos.getWallUploadServer"),
+]
 
-    api.groups.getMembers(group_id=abs(test_group.id), count=1)
+OWNER_ID_METHODS = [
+    pytest.param("wall.get", {"count": 1}, id="wall.get"),
+    pytest.param("photos.get", {"album_id": "wall", "count": 1}, id="photos.get"),
+    pytest.param("photos.getAlbums", {"count": 1}, id="photos.getAlbums"),
+]
 
-    with pytest.raises(ApiError):
-        api.groups.getMembers(group_id=test_group.id, count=1)
+
+def _call(api, method: str, **params):
+    target = api
+
+    for part in method.split("."):
+        target = getattr(target, part)
+
+    return target(**params)
 
 
-def test_vk_rejects_positive_owner_id(pyvko_client, test_group):
-    api = pyvko_client.new_api
+@pytest.mark.parametrize(("method", "params"), GROUP_ID_METHODS)
+class TestGroupIdIsPositive:
+    def test_accepts_positive(self, pyvko_client, test_group, method, params):
+        _call(pyvko_client.new_api, method, group_id=abs(test_group.id), **params)
 
-    api.wall.get(owner_id=test_group.id, count=1)
+    def test_rejects_negative(self, pyvko_client, test_group, method, params):
+        with pytest.raises(ApiError):
+            _call(pyvko_client.new_api, method, group_id=test_group.id, **params)
 
-    with pytest.raises(ApiError):
-        api.wall.get(owner_id=abs(test_group.id), count=1)
+
+@pytest.mark.parametrize(("method", "params"), OWNER_ID_METHODS)
+class TestOwnerIdIsNegative:
+    def test_accepts_negative(self, pyvko_client, test_group, method, params):
+        _call(pyvko_client.new_api, method, owner_id=test_group.id, **params)
+
+    def test_rejects_positive(self, pyvko_client, test_group, method, params):
+        with pytest.raises(ApiError):
+            _call(pyvko_client.new_api, method, owner_id=abs(test_group.id), **params)
 
 
 def test_get_members_returns_users(test_group):
