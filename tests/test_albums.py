@@ -15,6 +15,7 @@ def test_album_has_name(created_album):
 @pytest.mark.create
 def test_get_album_by_id(test_group, created_album):
     album = test_group.get_album_by_id(created_album.id)
+
     assert album is not None
     assert album.id == created_album.id
 
@@ -28,6 +29,7 @@ def test_photo_uploaded(uploaded_photo):
 @pytest.mark.create
 def test_photo_has_url(uploaded_photo):
     url = uploaded_photo.largest_link()
+
     assert url
     assert url.startswith("https://")
 
@@ -36,6 +38,7 @@ def test_photo_has_url(uploaded_photo):
 def test_album_get_photos_contains_uploaded(created_album, uploaded_photo):
     photos = created_album.get_photos()
     photo_ids = [p.id for p in photos]
+
     assert uploaded_photo.id in photo_ids
 
 

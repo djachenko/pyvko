@@ -64,6 +64,7 @@ USED_METHODS = [
 def _probe(api, method: str) -> int | None:
     """Вызывает метод с мусорными параметрами. Возвращает код ошибки или None."""
     target = api
+
     for part in method.split("."):
         target = getattr(target, part)
 
@@ -81,10 +82,12 @@ def _method_id(method: str):
             strict=True,
             reason=REMOVED_METHODS[method],
         ))
+
     return method
 
 
 @pytest.mark.parametrize("method", [_method_id(m) for m in USED_METHODS])
 def test_method_exists(pyvko_client, method: str):
     code = _probe(pyvko_client.new_api, method)
+
     assert code != METHOD_NOT_FOUND, f"VK removed {method}"

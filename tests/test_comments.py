@@ -15,6 +15,7 @@ def test_comment_has_text(created_comment):
 @pytest.mark.create
 def test_get_comment(created_post, created_comment):
     comment = created_post.get_comment(created_comment.id)
+
     assert comment is not None
     assert comment.id == created_comment.id
 
@@ -23,4 +24,5 @@ def test_get_comment(created_post, created_comment):
 def test_get_comments_list_contains_created(created_post, created_comment):
     comments = created_post.get_comments()
     ids = [c.id for c in comments]
+
     assert created_comment.id in ids

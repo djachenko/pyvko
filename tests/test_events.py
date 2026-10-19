@@ -23,6 +23,7 @@ def test_created_event_has_start_date(created_event):
 @pytest.mark.create
 def test_event_section_state_wall(created_event):
     state = created_event.section_state(Event.Section.WALL)
+
     # None when event settings are not accessible (no admin rights or API error 15)
     if state is not None:
         assert isinstance(state, Event.SectionState)
@@ -31,6 +32,7 @@ def test_event_section_state_wall(created_event):
 @pytest.mark.create
 def test_event_set_section_state(created_event):
     current = created_event.section_state(Event.Section.PHOTOS)
+
     if current is None or current == Event.SectionState.NOT_AVAILABLE:
         pytest.skip("PHOTOS section not accessible on this event")
 
@@ -39,6 +41,7 @@ def test_event_set_section_state(created_event):
         if current == Event.SectionState.DISABLED
         else Event.SectionState.DISABLED
     )
+
     created_event.set_section_state(Event.Section.PHOTOS, new_state)
     created_event.save()
 
@@ -46,6 +49,7 @@ def test_event_set_section_state(created_event):
 @pytest.mark.create
 def test_get_event_by_id(pyvko_client: Pyvko, created_event):
     event = pyvko_client.get_event(abs(created_event.id))
+
     assert event is not None
     assert event.id == created_event.id
 
@@ -66,4 +70,5 @@ def test_event_has_start_date(test_event):
 
 def test_event_get_posts(test_event):
     posts = test_event.get_posts()
+
     assert isinstance(posts, list)
