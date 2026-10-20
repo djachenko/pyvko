@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyvko"
-version = "0.1.16"
+version = "0.1.17"
 description = "VK API typed wrapper library"
 readme = "README.md"
 license = { text = "MIT" }

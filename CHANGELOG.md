@@ -2,6 +2,57 @@
 
 <!-- version list -->
 
+## v0.1.17 (2026-10-20)
+
+### Bug Fixes
+
+- Drop warnings.deprecated from Likes.like, unavailable before Python 3.13
+  ([`a4a1eaf`](https://github.com/djachenko/pyvko/commit/a4a1eaf750f75eaf7db11fc103f4975ea9d99ed6))
+
+- Dropped trailing commas in enum
+  ([`a892879`](https://github.com/djachenko/pyvko/commit/a89287956fa1d1bf0c230ac802856ea60f0b2e70))
+
+- Moved album photo uploader to library logic
+  ([`6f400b8`](https://github.com/djachenko/pyvko/commit/6f400b8e87533eeb223c45e18f0a031447463bf7))
+
+- Pass str paths to vk_api album photo upload
+  ([`59f006e`](https://github.com/djachenko/pyvko/commit/59f006e8e26ec4f2056d6cfc8897d91eef0508db))
+
+### Refactoring
+
+- Migrate Comments and Likes to new_api, mark likes.add as deleted
+  ([`67e4ad1`](https://github.com/djachenko/pyvko/commit/67e4ad13f46107ca5faa8bfa60db0bdcaeaac429))
+
+- Migrate Posts.update_post to new_api
+  ([`af448b8`](https://github.com/djachenko/pyvko/commit/af448b8f22a3f5f6b5bf51bad8ad12c80935098c))
+
+- Rename new_api to api and api stop-crane to old_api
+  ([`316be87`](https://github.com/djachenko/pyvko/commit/316be876aa8b03f64d2ae793da2602ab27710c2f))
+
+### Testing
+
+- Cover Album.add_photos
+  ([`adaa71f`](https://github.com/djachenko/pyvko/commit/adaa71f58bd8cbe26705591a436c9ef0b2a80816))
+
+- Cover new_api aspects against a fake VK API
+  ([`99afff3`](https://github.com/djachenko/pyvko/commit/99afff3acb39fc66577d78ac75ac9b06240c97da))
+
+- Cover Path arguments in AlbumPhotoUploader.upload_many
+  ([`6607a50`](https://github.com/djachenko/pyvko/commit/6607a50f8fe85e48b66904785fc1eb12a730babb))
+
+- Cover single photo upload in AlbumPhotoUploader
+  ([`db2737d`](https://github.com/djachenko/pyvko/commit/db2737d6b1bee4b33dd602568a9721c4017479c4))
+
+- Move integration tests to tests/integration
+  ([`b89076c`](https://github.com/djachenko/pyvko/commit/b89076c715d80cda83ecc17e9eed862dcb946b5c))
+
+- Restyle aspect tests per review — fixtures, suites, multiline literals
+  ([`7c7d5ce`](https://github.com/djachenko/pyvko/commit/7c7d5ceb5e5fbcc536dda37e4338ab7c6c3ea65b))
+
+- Split unit tests into tests/unit per aspect
+  ([`3c40e91`](https://github.com/djachenko/pyvko/commit/3c40e9181124d5b73c5b090304606f94ecd2e94b))
+
+
 ## v0.1.16 (2026-10-19)
 
 ### Bug Fixes
