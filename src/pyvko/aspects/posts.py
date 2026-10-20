@@ -187,7 +187,7 @@ class Posts(ApiMixin, ABC):
     def update_post(self, post: Post):
         request = self.__get_post_request(post)
 
-        self.api.wall.edit(**request)
+        self.new_api.wall.edit(**request)
 
     def delete_post(self, post_id):
         request = self.__get_owned_request({

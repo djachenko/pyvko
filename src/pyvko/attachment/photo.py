@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional, Dict, Any
+from vk_api import VkApi
 
 from pyvko.api_based import ApiBased
 from pyvko.aspects.likes import Likes
@@ -9,17 +10,17 @@ from pyvko.attachment.attachment import Attachment
 class Photo(ApiBased, Attachment, Likes):
     class Size(str, Enum):
         WIDTH_75 = "s"
-        WIDTH_130 = "m",
-        WIDTH_604 = "x",
-        WIDTH_807 = "y",
-        WIDTH_1080 = "z",
-        WIDTH_2560 = "w",
+        WIDTH_130 = "m"
+        WIDTH_604 = "x"
+        WIDTH_807 = "y"
+        WIDTH_1080 = "z"
+        WIDTH_2560 = "w"
 
     @property
     def id(self) -> int:
         return self.__id
 
-    def __init__(self, api: Any, photo_id: int, owner_id: int, size_links: Dict[Size, str], text: str) -> None:
+    def __init__(self, api: VkApi, photo_id: int, owner_id: int, size_links: Dict[Size, str], text: str) -> None:
         super().__init__(api)
 
         self.__id = photo_id

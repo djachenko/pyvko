@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import List, Dict
 
 from pyvko.api_based import ApiMixin
+from pyvko.shared.exceptions import MethodWasDeleted
 from pyvko.shared.utils import get_all
 
 
@@ -36,7 +37,7 @@ class Likes(ApiMixin, ABC):
     def get_likes(self) -> List[Like]:
         request = self.get_request()
 
-        return [Like.from_api_object(i) for i in get_all(request, self.api.likes.getList)]
+        return [Like.from_api_object(i) for i in get_all(request, self.new_api.likes.getList)]
 
     def has_likes(self) -> bool:
         return len(self.get_likes()) > 0
@@ -49,14 +50,12 @@ class Likes(ApiMixin, ABC):
 
         request = self.get_request(params)
 
-        response = self.api.likes.isLiked(**request)
+        response = self.new_api.likes.isLiked(**request)
 
         return response["liked"] == 1
 
     def like(self) -> None:
-        request = self.get_request()
-
-        self.api.likes.add(**request)
+        raise MethodWasDeleted("likes.add")
 
     def get_request(self, parameters: Dict | None = None) -> Dict:
         return super().get_request() | {
